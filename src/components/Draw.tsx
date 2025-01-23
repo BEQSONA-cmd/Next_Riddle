@@ -3,7 +3,7 @@ import { block_size, map, map_structure } from "./Map";
 import { WIDTH, HEIGHT } from "./Player";
 
 const pixel_size: number = 4;
-const MODE: number = 1;
+const MODE: number = 0;
 
 function get_side(ray_x: number, ray_y: number, angle: number): number {
     let sx: number = -1;
@@ -77,13 +77,18 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
 
     while (!is_touch(ray_x, ray_y, '1') && !is_touch(ray_x, ray_y, 'S') && !is_touch(ray_x, ray_y, 'N') && !is_touch(ray_x, ray_y, 'W') && !is_touch(ray_x, ray_y, 'E'))
     {
-        ctx.fillStyle = "red";
-        ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+        if(MODE)
+        {
+            ctx.fillStyle = "red";
+            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+        }
 
         ray_x += cos_angle;
         ray_y += sin_angle;
     }
 
+    let distance: number = fixed_dist(player.x, player.y, ray_x, ray_y);
+    let add_distance: number = 0;
     if (is_touch(ray_x, ray_y, 'S')) 
     {
         let [no_ray_x, no_ray_y] = [0, 0];
@@ -103,18 +108,24 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
             cos_angle = Math.cos(ray_angle + Math.PI / 2);
             sin_angle = Math.sin(ray_angle + Math.PI / 2);
         }
-            
+        
         ray_x = no_ray_x + cos_angle;
         ray_y = no_ray_y + sin_angle;
+        const save_x = ray_x;
+        const save_y = ray_y;
 
         while(!is_touch(ray_x, ray_y, '1'))
         {
-            ctx.fillStyle = "red";
-            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            if(MODE)
+            {
+                ctx.fillStyle = "red";
+                ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            }
 
             ray_x += cos_angle;
             ray_y += sin_angle;
         }
+        add_distance = fixed_dist(save_x, save_y, ray_x, ray_y);
     }
     else if(is_touch(ray_x, ray_y, 'N'))
     {
@@ -140,15 +151,21 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
             
         ray_x = so_ray_x + cos_angle;
         ray_y = so_ray_y + sin_angle;
+        const save_x = ray_x;
+        const save_y = ray_y;
 
         while(!is_touch(ray_x, ray_y, '1'))
         {
-            ctx.fillStyle = "red";
-            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            if(MODE)
+            {
+                ctx.fillStyle = "red";
+                ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            }
 
             ray_x += cos_angle;
             ray_y += sin_angle;
         }
+        add_distance = fixed_dist(save_x, save_y, ray_x, ray_y);
     }
     else if(is_touch(ray_x, ray_y, 'W'))
     {
@@ -174,15 +191,21 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
             
         ray_x = ea_ray_x + cos_angle;
         ray_y = ea_ray_y + sin_angle;
+        const save_x = ray_x;
+        const save_y = ray_y;
 
         while(!is_touch(ray_x, ray_y, '1'))
         {
-            ctx.fillStyle = "red";
-            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            if(MODE)
+            {
+                ctx.fillStyle = "red";
+                ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            }
 
             ray_x += cos_angle;
             ray_y += sin_angle;
         }
+        add_distance = fixed_dist(save_x, save_y, ray_x, ray_y);
     }
     else if(is_touch(ray_x, ray_y, 'E'))
     {
@@ -208,51 +231,62 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
             
         ray_x = we_ray_x + cos_angle;
         ray_y = we_ray_y + sin_angle;
+        const save_x = ray_x;
+        const save_y = ray_y;
 
         while(!is_touch(ray_x, ray_y, '1'))
         {
-            ctx.fillStyle = "red";
-            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            if(MODE)
+            {
+                ctx.fillStyle = "red";
+                ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            }
 
             ray_x += cos_angle;
             ray_y += sin_angle;
         }
+        add_distance = fixed_dist(save_x, save_y, ray_x, ray_y);
+    }
+
+    if(!MODE)
+    {
+        distance += add_distance;
+        distance *= Math.cos(ray_angle - player.angle);
+
+
+      const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
+      let start_y = (HEIGHT - height) / 2;
+      let end_y = start_y + height;
+      const intensity = Math.max(0, 255 - distance);
+    
+      let angle: number = ray_angle;
+    
+    //   ctx.fillStyle = "blue";
+      if(get_side(ray_x, ray_y, ray_angle) == 1)
+        ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+      else if(get_side(ray_x, ray_y, ray_angle) == 2)
+        ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+      else if(get_side(ray_x, ray_y, ray_angle) == 3)
+        ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+      else if(get_side(ray_x, ray_y, ray_angle) == 4)
+        ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+    
+      if(start_y < 0)
+        start_y = 0;
+      if(end_y > HEIGHT)
+        end_y = HEIGHT;
+    
+      let middle_up: number = start_y;
+      let middle_low: number = end_y;
+      while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
+      {
+        ctx.fillRect(i, middle_up, pixel_size, pixel_size);
+        ctx.fillRect(i, middle_low, pixel_size, pixel_size);
+        middle_up += pixel_size - 1;
+        middle_low -= pixel_size - 1;
+      }
     }
 }
 
-// if(!MODE)
-// {
-//   const distance: number = fixed_dist(player.x, player.y, ray_x, ray_y, player, ray_angle);
-//   const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
-//   let start_y = (HEIGHT - height) / 2;
-//   let end_y = start_y + height;
-//   const intensity = Math.max(0, 255 - distance);
-
-//   let angle: number = ray_angle;
-
-//   if(get_side(ray_x, ray_y, ray_angle) == 1)
-//     ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-//   else if(get_side(ray_x, ray_y, ray_angle) == 2)
-//     ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-//   else if(get_side(ray_x, ray_y, ray_angle) == 3)
-//     ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-//   else if(get_side(ray_x, ray_y, ray_angle) == 4)
-//     ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
-
-//   if(start_y < 0)
-//     start_y = 0;
-//   if(end_y > HEIGHT)
-//     end_y = HEIGHT;
-
-//   let middle_up: number = start_y;
-//   let middle_low: number = end_y;
-//   while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
-//   {
-//     ctx.fillRect(i, middle_up, pixel_size, pixel_size);
-//     ctx.fillRect(i, middle_low, pixel_size, pixel_size);
-//     middle_up += pixel_size - 1;
-//     middle_low -= pixel_size - 1;
-//   }
-// }
 
 export { draw_one_ray, pixel_size, MODE, is_touch };
