@@ -4,7 +4,10 @@ import { update_position, player, WIDTH, HEIGHT } from "./Player";
 import { draw_map, map, init_map_structure } from "./Map";
 import { draw_one_ray, pixel_size, MODE } from "./Draw";
 
-
+// pi / 2 = 90 degrees
+// pi = 180 degrees
+// pi * 3 / 2 = 270 degrees
+// pi * 2 = 360 degrees
 
 const Game = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -32,7 +35,7 @@ const Game = () => {
             fracrion = fracrion * pixel_size;
             let start_x: number = player.angle - Math.PI / 6;
 
-            for (let i = 0; i < 4; i += pixel_size) {
+            for (let i = 0; i < WIDTH; i += pixel_size) {
                 draw_one_ray(ctx, player, start_x, i);
                 start_x += fracrion;
             }

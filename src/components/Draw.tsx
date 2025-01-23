@@ -40,36 +40,70 @@ function is_touch(x: number, y: number, c: any) {
     return 0;
 }
 
-function get_no(ray_x: number, angle: number) 
+function get_no(ray_x: number, x: number)
 {
-    let diff_x = ray_x - map_structure.sout_x;
+    let diff_x = ray_x - x;
     let no_x = map_structure.north_x + diff_x;
     return [no_x, map_structure.north_y];
 }
-function get_so(ray_x: number, angle: number) 
+
+function get_so(ray_x: number, x: number)
 {
-    let diff_x = ray_x - map_structure.north_x;
+    let diff_x = ray_x - x;
     let so_x = map_structure.sout_x + diff_x;
     return [so_x, map_structure.sout_y];
 }
 
+function get_we(ray_x: number, x: number)
+{
+    let diff_x = ray_x - x;
+    let we_y = map_structure.west_y + diff_x;
+    return [map_structure.west_x, we_y];
+}
+
+function get_ea(ray_x: number, x : number)
+{
+    let diff_x = ray_x - x;
+    let ea_y = map_structure.east_y + diff_x;
+    return [map_structure.east_x, ea_y];
+}
 
 function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
 
-    const cos_angle: number = Math.cos(player.angle);
-    const sin_angle: number = Math.sin(player.angle);
+    let cos_angle: number = Math.cos(ray_angle);
+    let sin_angle: number = Math.sin(ray_angle);
 
-    while (!is_touch(ray_x, ray_y, '1') && !is_touch(ray_x, ray_y, 'S') && !is_touch(ray_x, ray_y, 'N')) {
+    while (!is_touch(ray_x, ray_y, '1') && !is_touch(ray_x, ray_y, 'S') && !is_touch(ray_x, ray_y, 'N') && !is_touch(ray_x, ray_y, 'W') && !is_touch(ray_x, ray_y, 'E'))
+    {
         ctx.fillStyle = "red";
         ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
 
         ray_x += cos_angle;
         ray_y += sin_angle;
     }
-    if (is_touch(ray_x, ray_y, 'S')) {
-        const [no_ray_x, no_ray_y] = get_no(ray_x, player.angle);
+
+    if (is_touch(ray_x, ray_y, 'S')) 
+    {
+        let [no_ray_x, no_ray_y] = [0, 0];
+        if(map_structure.north)
+            [no_ray_x, no_ray_y] = get_no(ray_x, map_structure.sout_x);
+        else if(map_structure.west)
+        {
+            let diff_x = ray_x - map_structure.sout_x;
+            no_ray_y = map_structure.west_y - diff_x + block_size;
+            no_ray_x = map_structure.west_x;
+            cos_angle = Math.cos(ray_angle - Math.PI / 2);
+            sin_angle = Math.sin(ray_angle - Math.PI / 2);
+        }
+        else if(map_structure.east)
+        {
+            [no_ray_x, no_ray_y] = get_ea(ray_x, map_structure.sout_x);
+            cos_angle = Math.cos(ray_angle + Math.PI / 2);
+            sin_angle = Math.sin(ray_angle + Math.PI / 2);
+        }
+            
         ray_x = no_ray_x + cos_angle;
         ray_y = no_ray_y + sin_angle;
 
@@ -84,9 +118,96 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
     }
     else if(is_touch(ray_x, ray_y, 'N'))
     {
-        const [so_ray_x, so_ray_y] = get_so(ray_x, player.angle);
+        let [so_ray_x, so_ray_y] = [0, 0];
+        if(map_structure.south)
+        {
+            [so_ray_x, so_ray_y] = get_so(ray_x, map_structure.north_x);
+        }
+        else if(map_structure.west)
+        {
+            [so_ray_x, so_ray_y] = get_we(ray_x, map_structure.north_x);
+            cos_angle = Math.cos(ray_angle + Math.PI / 2);
+            sin_angle = Math.sin(ray_angle + Math.PI / 2);
+        }
+        else if(map_structure.east)
+        {
+            let diff_x = ray_x - map_structure.north_x;
+            so_ray_y = map_structure.east_y - diff_x + block_size;
+            so_ray_x = map_structure.east_x;
+            cos_angle = Math.cos(ray_angle - Math.PI / 2);
+            sin_angle = Math.sin(ray_angle - Math.PI / 2);
+        }
+            
         ray_x = so_ray_x + cos_angle;
         ray_y = so_ray_y + sin_angle;
+
+        while(!is_touch(ray_x, ray_y, '1'))
+        {
+            ctx.fillStyle = "red";
+            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+
+            ray_x += cos_angle;
+            ray_y += sin_angle;
+        }
+    }
+    else if(is_touch(ray_x, ray_y, 'W'))
+    {
+        let [ea_ray_x, ea_ray_y] = [0, 0];
+        if(map_structure.east)
+        {
+            [ea_ray_x, ea_ray_y] = get_ea(ray_y, map_structure.west_y);
+        }
+        else if(map_structure.north)
+        {
+            [ea_ray_x, ea_ray_y] = get_no(ray_y, map_structure.west_y);
+            cos_angle = Math.cos(ray_angle - Math.PI / 2);
+            sin_angle = Math.sin(ray_angle - Math.PI / 2);
+        }
+        else if(map_structure.south)
+        {
+            let diff_x = ray_y - map_structure.west_y;
+            ea_ray_y = map_structure.sout_y;
+            ea_ray_x = map_structure.sout_x - diff_x + block_size;
+            cos_angle = Math.cos(ray_angle + Math.PI / 2);
+            sin_angle = Math.sin(ray_angle + Math.PI / 2);
+        }
+            
+        ray_x = ea_ray_x + cos_angle;
+        ray_y = ea_ray_y + sin_angle;
+
+        while(!is_touch(ray_x, ray_y, '1'))
+        {
+            ctx.fillStyle = "red";
+            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+
+            ray_x += cos_angle;
+            ray_y += sin_angle;
+        }
+    }
+    else if(is_touch(ray_x, ray_y, 'E'))
+    {
+        let [we_ray_x, we_ray_y] = [0, 0];
+        if(map_structure.west)
+        {
+            [we_ray_x, we_ray_y] = get_we(ray_y, map_structure.east_y);
+        }
+        else if(map_structure.north)
+        {
+            let diff_x = ray_y - map_structure.east_y;
+            we_ray_y = map_structure.north_y;
+            we_ray_x = map_structure.north_x - diff_x + block_size;
+            cos_angle = Math.cos(ray_angle + Math.PI / 2);
+            sin_angle = Math.sin(ray_angle + Math.PI / 2);
+        }
+        else if(map_structure.south)
+        {
+            [we_ray_x, we_ray_y] = get_so(ray_y, map_structure.east_y);
+            cos_angle = Math.cos(ray_angle - Math.PI / 2);
+            sin_angle = Math.sin(ray_angle - Math.PI / 2);
+        }
+            
+        ray_x = we_ray_x + cos_angle;
+        ray_y = we_ray_y + sin_angle;
 
         while(!is_touch(ray_x, ray_y, '1'))
         {
