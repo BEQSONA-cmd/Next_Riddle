@@ -1,5 +1,5 @@
 import { fixed_dist } from "./Utils";
-import { block_size, map } from "./Map";
+import { block_size, map, map_structure } from "./Map";
 import { WIDTH, HEIGHT } from "./Player";
 
 const pixel_size: number = 4;
@@ -40,55 +40,17 @@ function is_touch(x: number, y: number, c: any) {
     return 0;
 }
 
-// const map = [
-//     "1111111S11111111",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "1000000000000001",
-//     "111111111111N111",
-// ];
-
-function get_no(ray_x: number, angle: number) {
-    let x = 0;
-    let y = 0;
-
-    while(map[y][x] != 'S')
-    {
-        x++;
-        if(x == map[0].length)
-        {
-            x = 0;
-            y++;
-        }
-    }
-    x = x * block_size;
-
-    let diff_x = ray_x - x;
-
-    x = 0;
-    y = 0;
-
-    while(map[y][x] != 'N')
-    {
-        x++;
-        if(x == map[0].length)
-        {
-            x = 0;
-            y++;
-        }
-    }
-
-    let no_y = y * block_size;
-    let no_x = x * block_size + diff_x;
-
-    return [no_x, no_y];
+function get_no(ray_x: number, angle: number) 
+{
+    let diff_x = ray_x - map_structure.sout_x;
+    let no_x = map_structure.north_x + diff_x;
+    return [no_x, map_structure.north_y];
+}
+function get_so(ray_x: number, angle: number) 
+{
+    let diff_x = ray_x - map_structure.north_x;
+    let so_x = map_structure.sout_x + diff_x;
+    return [so_x, map_structure.sout_y];
 }
 
 
@@ -96,8 +58,8 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
 
-    const cos_angle: number = Math.cos(ray_angle);
-    const sin_angle: number = Math.sin(ray_angle);
+    const cos_angle: number = Math.cos(player.angle);
+    const sin_angle: number = Math.sin(player.angle);
 
     while (!is_touch(ray_x, ray_y, '1') && !is_touch(ray_x, ray_y, 'S') && !is_touch(ray_x, ray_y, 'N')) {
         ctx.fillStyle = "red";
@@ -106,16 +68,25 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
         ray_x += cos_angle;
         ray_y += sin_angle;
     }
-
-    // If it touches the south side of the portal ('S'), continue from the north side ('N')
     if (is_touch(ray_x, ray_y, 'S')) {
-        ctx.fillStyle = "black";
-        // Get the new ray start position on the 'N' portal
-        const [no_ray_x, no_ray_y] = get_no(ray_x, ray_angle);
-        ray_x = no_ray_x;
-        ray_y = no_ray_y;
-        ray_x += cos_angle;
-        ray_y += sin_angle;
+        const [no_ray_x, no_ray_y] = get_no(ray_x, player.angle);
+        ray_x = no_ray_x + cos_angle;
+        ray_y = no_ray_y + sin_angle;
+
+        while(!is_touch(ray_x, ray_y, '1'))
+        {
+            ctx.fillStyle = "red";
+            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+
+            ray_x += cos_angle;
+            ray_y += sin_angle;
+        }
+    }
+    else if(is_touch(ray_x, ray_y, 'N'))
+    {
+        const [so_ray_x, so_ray_y] = get_so(ray_x, player.angle);
+        ray_x = so_ray_x + cos_angle;
+        ray_y = so_ray_y + sin_angle;
 
         while(!is_touch(ray_x, ray_y, '1'))
         {
