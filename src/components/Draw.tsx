@@ -68,9 +68,10 @@ function get_ea(ray_x: number, x : number)
     return [map_structure.east_x, ea_y];
 }
 
-function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
+function draw_one_ray(ctx: any, player: any, ray_angle_first: number, i: number) {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
+    let ray_angle: number = ray_angle_first;
 
     let cos_angle: number = Math.cos(ray_angle);
     let sin_angle: number = Math.sin(ray_angle);
@@ -289,4 +290,200 @@ function draw_one_ray(ctx: any, player: any, ray_angle: number, i: number) {
 }
 
 
-export { draw_one_ray, pixel_size, MODE, is_touch };
+function update_position(player: any, keys: any, map: any) 
+{
+    const angle_speed: number = 0.1;
+
+    if (keys["ArrowLeft"]) {
+        player.angle -= angle_speed;
+    } else if (keys["ArrowRight"]) {
+        player.angle += angle_speed;
+    }
+
+    const cos_angle = Math.cos(player.angle);
+    const sin_angle = Math.sin(player.angle);
+
+    let dx = 0;
+    let dy = 0;
+
+    if (keys["w"]) {
+        dx += cos_angle * player.speed;
+        dy += sin_angle * player.speed;
+    } else if (keys["s"]) {
+        dx -= cos_angle * player.speed;
+        dy -= sin_angle * player.speed;
+    }
+
+    if (keys["a"]) {
+        dx += sin_angle * player.speed;
+        dy -= cos_angle * player.speed;
+    } else if (keys["d"]) {
+        dx -= sin_angle * player.speed;
+        dy += cos_angle * player.speed;
+    }
+
+    player.x += dx;
+    if (is_touch(player.x, player.y, '1'))
+        player.x -= dx;
+    else if (is_touch(player.x, player.y, 'S'))
+    {
+        if(map_structure.north)
+        {
+            [player.x, player.y] = get_no(player.x, map_structure.sout_x);
+        }
+        else if(map_structure.west)
+        {
+            let diff_x = player.x - map_structure.sout_x;
+            player.y = map_structure.west_y - diff_x + block_size;
+            player.x = map_structure.west_x;
+            player.angle = player.angle - Math.PI / 2;
+        }
+        else if(map_structure.east)
+        {
+            [player.x, player.y] = get_ea(player.x, map_structure.sout_x);
+            player.angle = player.angle + Math.PI / 2;
+        }
+    }
+    else if (is_touch(player.x, player.y, 'N'))
+    {
+        if(map_structure.south)
+        {
+            [player.x, player.y] = get_so(player.x, map_structure.north_x);
+        }
+        else if(map_structure.west)
+        {
+            [player.x, player.y] = get_we(player.x, map_structure.north_x);
+            player.angle = player.angle + Math.PI / 2;
+        }
+        else if(map_structure.east)
+        {
+            let diff_x = player.x - map_structure.north_x;
+            player.y = map_structure.east_y - diff_x + block_size;
+            player.x = map_structure.east_x;
+            player.angle = player.angle - Math.PI / 2;
+        }
+    }
+    else if (is_touch(player.x, player.y, 'W'))
+    {
+        if(map_structure.east)
+        {
+            [player.x, player.y] = get_ea(player.y, map_structure.west_y);
+        }
+        else if(map_structure.north)
+        {
+            [player.x, player.y] = get_no(player.y, map_structure.west_y);
+            player.angle = player.angle - Math.PI / 2;
+        }
+        else if(map_structure.south)
+        {
+            let diff_x = player.y - map_structure.west_y;
+            player.x = map_structure.sout_x - diff_x + block_size;
+            player.y = map_structure.sout_y;
+            player.angle = player.angle + Math.PI / 2;
+        }
+    }
+    else if (is_touch(player.x, player.y, 'E'))
+    {
+        if(map_structure.west)
+        {
+            [player.x, player.y] = get_we(player.y, map_structure.east_y);
+        }
+        else if(map_structure.north)
+        {
+            let diff_x = player.y - map_structure.east_y;
+            player.x = map_structure.north_x - diff_x + block_size;
+            player.y = map_structure.north_y;
+            player.angle = player.angle + Math.PI / 2;
+        }
+        else if(map_structure.south)
+        {
+            [player.x, player.y] = get_so(player.y, map_structure.east_y);
+            player.angle = player.angle - Math.PI / 2;
+        }
+    }
+
+    player.y += dy;
+    if (is_touch(player.x, player.y, '1'))
+        player.y -= dy;
+    else if (is_touch(player.x, player.y, 'S'))
+    {
+        if(map_structure.north)
+        {
+            [player.x, player.y] = get_no(player.x, map_structure.sout_x);
+        }
+        else if(map_structure.west)
+        {
+            let diff_x = player.x - map_structure.sout_x;
+            player.y = map_structure.west_y - diff_x + block_size;
+            player.x = map_structure.west_x;
+            player.angle = player.angle - Math.PI / 2;
+        }
+        else if(map_structure.east)
+        {
+            [player.x, player.y] = get_ea(player.x, map_structure.sout_x);
+            player.angle = player.angle + Math.PI / 2;
+        }
+    }
+    else if (is_touch(player.x, player.y, 'N'))
+    {
+        if(map_structure.south)
+        {
+            [player.x, player.y] = get_so(player.x, map_structure.north_x);
+        }
+        else if(map_structure.west)
+        {
+            [player.x, player.y] = get_we(player.x, map_structure.north_x);
+            player.angle = player.angle + Math.PI / 2;
+        }
+        else if(map_structure.east)
+        {
+            let diff_x = player.x - map_structure.north_x;
+            player.y = map_structure.east_y - diff_x + block_size;
+            player.x = map_structure.east_x;
+            player.angle = player.angle - Math.PI / 2;
+        }
+    }
+    else if (is_touch(player.x, player.y, 'W'))
+    {
+        if(map_structure.east)
+        {
+            [player.x, player.y] = get_ea(player.y, map_structure.west_y);
+        }
+        else if(map_structure.north)
+        {
+            [player.x, player.y] = get_no(player.y, map_structure.west_y);
+            player.angle = player.angle - Math.PI / 2;
+        }
+        else if(map_structure.south)
+        {
+            let diff_x = player.y - map_structure.west_y;
+            player.x = map_structure.sout_x - diff_x + block_size;
+            player.y = map_structure.sout_y;
+            player.angle = player.angle + Math.PI / 2;
+        }
+    }
+    else if (is_touch(player.x, player.y, 'E'))
+    {
+        if(map_structure.west)
+        {
+            [player.x, player.y] = get_we(player.y, map_structure.east_y);
+        }
+        else if(map_structure.north)
+        {
+            let diff_x = player.y - map_structure.east_y;
+            player.x = map_structure.north_x - diff_x + block_size;
+            player.y = map_structure.north_y;
+            player.angle = player.angle + Math.PI / 2;
+        }
+        else if(map_structure.south)
+        {
+            [player.x, player.y] = get_so(player.y, map_structure.east_y);
+            player.angle = player.angle - Math.PI / 2;
+        }
+    }
+
+    player.dx = dx;
+    player.dy = dy;
+}
+
+export { draw_one_ray, pixel_size, MODE, is_touch, update_position };

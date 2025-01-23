@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { handleKeyDown, handleKeyUp, keys } from "./Keys";
-import { update_position, player, WIDTH, HEIGHT } from "./Player";
+import { player, WIDTH, HEIGHT } from "./Player";
 import { draw_map, map, init_map_structure } from "./Map";
-import { draw_one_ray, pixel_size, MODE } from "./Draw";
+import { draw_one_ray, pixel_size, MODE, update_position } from "./Draw";
 
 // pi / 2 = 90 degrees
 // pi = 180 degrees
