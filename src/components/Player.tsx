@@ -1,4 +1,4 @@
-import { map, block_size } from "./Map";
+import { is_touch } from "./Draw";
 const WIDTH = 800;
 const HEIGHT = 600;
 
@@ -13,17 +13,6 @@ const player = {
     dx: 0,
     dy: 0,
 };
-
-function is_not_wall(x: number, y: number) 
-{
-  const block_x: number = x / block_size;
-  const block_y: number = y / block_size;
-
-  if (map[Math.floor(block_y)][Math.floor(block_x)] === "1")
-    return false;
-
-  return true;
-}
 
 function update_position(player: any, keys: any, map: any) 
 {
@@ -58,12 +47,12 @@ function update_position(player: any, keys: any, map: any)
     }
 
     player.x += dx;
-    if (!is_not_wall(player.x, player.y)) {
+    if (is_touch(player.x, player.y, '1')) {
         player.x -= dx;
     }
 
     player.y += dy;
-    if (!is_not_wall(player.x, player.y)) {
+    if (is_touch(player.x, player.y, '1')) {
         player.y -= dy;
     }
 

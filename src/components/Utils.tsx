@@ -1,16 +1,3 @@
-import { block_size, map } from "./Map";
-
-function is_not_wall(x: number, y: number) 
-{
-  const block_x: number = x / block_size;
-  const block_y: number = y / block_size;
-
-  if (map[Math.floor(block_y)][Math.floor(block_x)] === "1")
-    return false;
-
-  return true;
-}
-
 function fixed_dist(x1: number, y1: number, x2: number, y2: number, player: any, start_x: number)
 {
     const delta_x: number = x2 - x1;
@@ -20,5 +7,4 @@ function fixed_dist(x1: number, y1: number, x2: number, y2: number, player: any,
     return fix_dist;
 }
 
-export { is_not_wall, fixed_dist };;
-// ...existing code...
+export { fixed_dist };
