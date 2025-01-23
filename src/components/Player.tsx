@@ -1,3 +1,4 @@
+import { map, block_size } from "./Map";
 const WIDTH = 800;
 const HEIGHT = 600;
 
@@ -13,39 +14,61 @@ const player = {
     dy: 0,
 };
 
+function is_not_wall(x: number, y: number) 
+{
+  const block_x: number = x / block_size;
+  const block_y: number = y / block_size;
+
+  if (map[Math.floor(block_y)][Math.floor(block_x)] === "1")
+    return false;
+
+  return true;
+}
+
 function update_position(player: any, keys: any, map: any) 
 {
     const angle_speed: number = 0.1;
 
-    if (keys["ArrowLeft"])
+    if (keys["ArrowLeft"]) {
         player.angle -= angle_speed;
-    else if (keys["ArrowRight"])
+    } else if (keys["ArrowRight"]) {
         player.angle += angle_speed;
+    }
 
     const cos_angle = Math.cos(player.angle);
     const sin_angle = Math.sin(player.angle);
 
+    let dx = 0;
+    let dy = 0;
+
     if (keys["w"]) {
-        player.dx = cos_angle * player.speed;
-        player.dy = sin_angle * player.speed;
+        dx += cos_angle * player.speed;
+        dy += sin_angle * player.speed;
     } else if (keys["s"]) {
-        player.dx = -cos_angle * player.speed;
-        player.dy = -sin_angle * player.speed;
-    } else {
-        player.dx = 0;
-        player.dy = 0;
+        dx -= cos_angle * player.speed;
+        dy -= sin_angle * player.speed;
     }
 
     if (keys["a"]) {
-        player.dx += sin_angle * player.speed;
-        player.dy -= cos_angle * player.speed;
+        dx += sin_angle * player.speed;
+        dy -= cos_angle * player.speed;
     } else if (keys["d"]) {
-        player.dx -= sin_angle * player.speed;
-        player.dy += cos_angle * player.speed;
+        dx -= sin_angle * player.speed;
+        dy += cos_angle * player.speed;
     }
 
-    player.x += player.dx;
-    player.y += player.dy;
+    player.x += dx;
+    if (!is_not_wall(player.x, player.y)) {
+        player.x -= dx;
+    }
+
+    player.y += dy;
+    if (!is_not_wall(player.x, player.y)) {
+        player.y -= dy;
+    }
+
+    player.dx = dx;
+    player.dy = dy;
 }
 
 export { update_position, player, WIDTH, HEIGHT };

@@ -29,21 +29,27 @@ function draw_one_ray(ctx: any, player: any, start_x: number, i: number)
 
   if(!MODE)
   {
-    const distance: number = fixed_dist(player.x, player.y, ray_x, ray_y, player);
-    const height: number = (block_size / distance) * (WIDTH / 2);
+    const distance: number = fixed_dist(player.x, player.y, ray_x, ray_y, player, start_x);
+    const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
+
+    const intensity = Math.max(0, 255 - distance);
+    ctx.fillStyle = `rgb(0, 0, ${intensity})`;
 
     if(start_y < 0)
       start_y = 0;
     if(end_y > HEIGHT)
       end_y = HEIGHT;
 
-    while(start_y < end_y)
+    let middle_up: number = start_y;
+    let middle_low: number = end_y;
+    while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
     {
-      ctx.fillStyle = "red";
-      ctx.fillRect(i, start_y, pixel_size, pixel_size);
-      start_y += pixel_size;
+      ctx.fillRect(i, middle_up, pixel_size, pixel_size);
+      ctx.fillRect(i, middle_low, pixel_size, pixel_size);
+      middle_up += pixel_size - 1;
+      middle_low -= pixel_size - 1;
     }
   }
 }
@@ -72,7 +78,7 @@ const Game = () =>
         draw_map(ctx, map);
       }
 
-      let fracrion: number = Math.PI / 3 / WIDTH;
+      let fracrion: number = (Math.PI / 3) / WIDTH;
       fracrion = fracrion * pixel_size;
       let start_x: number = player.angle - Math.PI / 6;
 
