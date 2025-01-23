@@ -7,6 +7,32 @@ import { is_not_wall, fixed_dist } from "./Utils";
 const pixel_size: number = 4;
 const MODE: number = 0;
 
+function get_side(ray_x: number, ray_y: number, angle: number): number
+{
+  let sx: number = -1;
+  let sy: number = -1;
+
+  if(Math.cos(angle) > 0)
+    sx = 1;
+  if(Math.sin(angle) > 0)
+    sy = 1;
+
+  if(!is_not_wall(ray_x - sx, ray_y))
+  {
+    if(sy == 1)
+      return 3;
+    return 1;
+  }
+  if(!is_not_wall(ray_x, ray_y - sy))
+  {
+    if(sx == 1)
+      return 4;
+    return 2;
+  }
+
+  return 0;
+}
+
 function draw_one_ray(ctx: any, player: any, start_x: number, i: number)
 {
   let ray_x: number = player.x;
@@ -33,9 +59,18 @@ function draw_one_ray(ctx: any, player: any, start_x: number, i: number)
     const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
-
     const intensity = Math.max(0, 255 - distance);
-    ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+
+    let angle: number = start_x;
+
+    if(get_side(ray_x, ray_y, start_x) == 1)
+      ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+    else if(get_side(ray_x, ray_y, start_x) == 2)
+      ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+    else if(get_side(ray_x, ray_y, start_x) == 3)
+      ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+    else if(get_side(ray_x, ray_y, start_x) == 4)
+      ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
 
     if(start_y < 0)
       start_y = 0;
