@@ -6,12 +6,12 @@ import { IAngle, IPlayer } from "@/utils/types";
 const pixel_size: number = 4;
 const MODE: number = 0;
 
-function get_side(ray_x: number, ray_y: number, angle: number): number {
+function get_side(ray_x: number, ray_y: number, angle: IAngle): number {
     let sx: number = -1;
     let sy: number = -1;
-
-    if (Math.cos(angle) > 0) sx = 1;
-    if (Math.sin(angle) > 0) sy = 1;
+    
+    if (angle.cos_angle> 0) sx = 1;
+    if (angle.sin_angle > 0) sy = 1;
 
     if (is_touch(ray_x - sx, ray_y, '1')) {
         if (sy == 1) return 3;
@@ -24,7 +24,6 @@ function get_side(ray_x: number, ray_y: number, angle: number): number {
 
     return 0;
 }
-
 
 function is_touch(x: number, y: number, c: any) 
 {
@@ -81,13 +80,13 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
     const intensity = 255;
 
     ctx.fillStyle = "black";
-    if(get_side(ray_x, ray_y, angle.angle) == 1)
+    if(get_side(ray_x, ray_y, angle) == 1)
         ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-    else if(get_side(ray_x, ray_y, angle.angle) == 2)
+    else if(get_side(ray_x, ray_y, angle) == 2)
         ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-    else if(get_side(ray_x, ray_y, angle.angle) == 3)
+    else if(get_side(ray_x, ray_y, angle) == 3)
         ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-    else if(get_side(ray_x, ray_y, angle.angle) == 4)
+    else if(get_side(ray_x, ray_y, angle) == 4)
         ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
 
     if(start_y < 0)
@@ -130,9 +129,14 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     }
     
     let distance = fixed_dist(player.x, player.y, ray_x, ray_y);
+
+    let new_player = { x: 0, y: 0, angle: 0}
+    let new_angle = { cos_angle: 0, sin_angle: 0, angle: 0,}
+
     if (is_touch(ray_x, ray_y, 'S')) 
     {
         let [no_ray_x, no_ray_y] = [0, 0];
+
         if(map_structure.north)
             [no_ray_x, no_ray_y] = get_no(ray_x, map_structure.sout_x);
         else if(map_structure.west)
@@ -140,22 +144,29 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             let diff_x = ray_x - map_structure.sout_x;
             no_ray_y = map_structure.west_y - diff_x + block_size;
             no_ray_x = map_structure.west_x;
+
             angle.cos_angle = Math.cos(angle.angle - Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle - Math.PI / 2);
+            new_angle.angle = angle.angle - Math.PI / 2;
+            new_player.angle = player.angle - Math.PI / 2;
+
         }
         else if(map_structure.east)
         {
             [no_ray_x, no_ray_y] = get_ea(ray_x, map_structure.sout_x);
+
             angle.cos_angle = Math.cos(angle.angle + Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle + Math.PI / 2);
+            new_angle.angle = angle.angle + Math.PI / 2;
+            new_player.angle = player.angle + Math.PI / 2;
         }
-        
-        let new_player = {
-            x: no_ray_x + angle.cos_angle,
-            y: no_ray_y + angle.sin_angle,
-        }
+        new_angle.cos_angle = angle.cos_angle;
+        new_angle.sin_angle = angle.sin_angle;
+        new_player.x = no_ray_x + angle.cos_angle;
+        new_player.y = no_ray_y + angle.sin_angle;
 
-        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
+        distance += draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        return distance;
 
     }
     else if(is_touch(ray_x, ray_y, 'N'))
@@ -168,24 +179,31 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         else if(map_structure.west)
         {
             [so_ray_x, so_ray_y] = get_we(ray_x, map_structure.north_x);
+
             angle.cos_angle = Math.cos(angle.angle + Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle + Math.PI / 2);
+            new_angle.angle = angle.angle + Math.PI / 2;
+            new_player.angle = player.angle + Math.PI / 2;
         }
         else if(map_structure.east)
         {
             let diff_x = ray_x - map_structure.north_x;
             so_ray_y = map_structure.east_y - diff_x + block_size;
             so_ray_x = map_structure.east_x;
+
             angle.cos_angle = Math.cos(angle.angle - Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle - Math.PI / 2);
-        }
-        let new_player = {
-            x: so_ray_x + angle.cos_angle,
-            y: so_ray_y + angle.sin_angle,
+            new_angle.angle = angle.angle - Math.PI / 2;
+            new_player.angle = player.angle - Math.PI / 2;
         }
 
-        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
+        new_player.x = so_ray_x + angle.cos_angle;
+        new_player.y = so_ray_y + angle.sin_angle;
+        new_angle.cos_angle = angle.cos_angle;
+        new_angle.sin_angle = angle.sin_angle;
 
+        distance += draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        return distance;
     }
     else if(is_touch(ray_x, ray_y, 'W'))
     {
@@ -197,24 +215,30 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         else if(map_structure.north)
         {
             [ea_ray_x, ea_ray_y] = get_no(ray_y, map_structure.west_y);
+
             angle.cos_angle = Math.cos(angle.angle - Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle - Math.PI / 2);
+            new_angle.angle = angle.angle - Math.PI / 2;
+            new_player.angle = player.angle - Math.PI / 2;
         }
         else if(map_structure.south)
         {
             let diff_x = ray_y - map_structure.west_y;
             ea_ray_y = map_structure.sout_y;
             ea_ray_x = map_structure.sout_x - diff_x + block_size;
+
             angle.cos_angle = Math.cos(angle.angle + Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle + Math.PI / 2);
+            new_angle.angle = angle.angle + Math.PI / 2;
+            new_player.angle = player.angle + Math.PI / 2;
         }
+        new_player.x = ea_ray_x + angle.cos_angle;
+        new_player.y = ea_ray_y + angle.sin_angle;
+        new_angle.cos_angle = angle.cos_angle;
+        new_angle.sin_angle = angle.sin_angle;
 
-        let new_player = {
-            x: ea_ray_x + angle.cos_angle,
-            y: ea_ray_y + angle.sin_angle,
-        }
-
-        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
+        distance += draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        return distance;
 
     }
     else if(is_touch(ray_x, ray_y, 'E'))
@@ -229,40 +253,49 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             let diff_x = ray_y - map_structure.east_y;
             we_ray_y = map_structure.north_y;
             we_ray_x = map_structure.north_x - diff_x + block_size;
+
             angle.cos_angle = Math.cos(angle.angle + Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle + Math.PI / 2);
+            new_angle.angle = angle.angle + Math.PI / 2;
+            new_player.angle = player.angle + Math.PI / 2;
         }
         else if(map_structure.south)
         {
             [we_ray_x, we_ray_y] = get_so(ray_y, map_structure.east_y);
             angle.cos_angle = Math.cos(angle.angle - Math.PI / 2);
             angle.sin_angle = Math.sin(angle.angle - Math.PI / 2);
-        }
-        let new_player = {
-            x: we_ray_x + angle.cos_angle,
-            y: we_ray_y + angle.sin_angle,
+            new_angle.angle = angle.angle - Math.PI / 2;
+            new_player.angle = player.angle - Math.PI / 2;
         }
 
-        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
+        new_player.x = we_ray_x + angle.cos_angle;
+        new_player.y = we_ray_y + angle.sin_angle;
+        new_angle.cos_angle = angle.cos_angle;
+        new_angle.sin_angle = angle.sin_angle;
+
+        distance += draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+
+        return distance;
         
     }
 
     if(!MODE)
     {
-        const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
+        // distance *= Math.cos(angle.angle - player.angle);
+        const height: number = ((block_size / distance) * (WIDTH / 2));
         let start_y = (HEIGHT - height) / 2;
         let end_y = start_y + height;
         //   const intensity = Math.max(0, 255 - distance);
         const intensity = 255;
 
         ctx.fillStyle = "black";
-        if(get_side(ray_x, ray_y, angle.angle) == 1)
+        if(get_side(ray_x, ray_y, angle) == 1)
             ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-        else if(get_side(ray_x, ray_y, angle.angle) == 2)
+        else if(get_side(ray_x, ray_y, angle) == 2)
             ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-        else if(get_side(ray_x, ray_y, angle.angle) == 3)
+        else if(get_side(ray_x, ray_y, angle) == 3)
             ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-        else if(get_side(ray_x, ray_y, angle.angle) == 4)
+        else if(get_side(ray_x, ray_y, angle) == 4)
             ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
 
         if(start_y < 0)
@@ -280,7 +313,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             middle_low -= pixel_size - 1;
         }
     }
-    return distance;
+    return 0
 }
 
 export { draw_one_ray, pixel_size, MODE, is_touch, get_side, get_no, get_so, get_we, get_ea, run_3d };
