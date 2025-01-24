@@ -7,25 +7,6 @@ const pixel_size: number = 4;
 const MODE: number = 0;
 const MAX_RECURSION: number = 10;
 
-function get_side(ray_x: number, ray_y: number, angle: IAngle): number {
-    let sx: number = -1;
-    let sy: number = -1;
-    
-    if (angle.cos_angle> 0) sx = 1;
-    if (angle.sin_angle > 0) sy = 1;
-
-    if (is_touch(ray_x - sx, ray_y, '1')) {
-        if (sy == 1) return 3;
-        return 1;
-    }
-    if (is_touch(ray_x, ray_y - sy, '1')) {
-        if (sx == 1) return 4;
-        return 2;
-    }
-
-    return 0;
-}
-
 function is_touch(x: number, y: number, c: any) 
 {
     const block_x: number = x / block_size;
@@ -71,39 +52,84 @@ function get_ea(ray_x: number, x : number)
     return [map_structure.east_x, ea_y];
 }
 
-function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray_x: number, ray_y: number)
+// function run_3d_old(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
+// {
+//     distance *= Math.cos(angle.angle - player.angle);
+//     const height: number = ((block_size / distance) * (WIDTH / 2));
+//     let start_y = (HEIGHT - height) / 2;
+//     let end_y = start_y + height;
+//     //   const intensity = Math.max(0, 255 - distance);
+//     const intensity = 255;
+
+//     // ctx.fillStyle = "black";
+//     if(get_side(ray.x, ray.y, angle) == 1)
+//         ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+//     else if(get_side(ray.x, ray.y, angle) == 2)
+//         ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+//     else if(get_side(ray.x, ray.y, angle) == 3)
+//         ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+//     else if(get_side(ray.x, ray.y, angle) == 4)
+//         ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+
+//     if(start_y < 0)
+//         start_y = 0;
+//     if(end_y > HEIGHT)
+//         end_y = HEIGHT;
+
+//     let middle_up: number = start_y;
+//     let middle_low: number = end_y;
+//     while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
+//     {
+//         ctx.fillRect(i, middle_up, pixel_size, pixel_size);
+//         ctx.fillRect(i, middle_low, pixel_size, pixel_size);
+//         middle_up += pixel_size - 1;
+//         middle_low -= pixel_size - 1;
+//     }
+// }
+
+function get_side(ray_x: number, ray_y: number, angle: IAngle): number {
+    let sx: number = -1;
+    let sy: number = -1;
+    
+    if (angle.cos_angle> 0) sx = 1;
+    if (angle.sin_angle > 0) sy = 1;
+
+    if (is_touch(ray_x - sx, ray_y, '1')) {
+        if (sy == 1) return 3;
+        return 1;
+    }
+    if (is_touch(ray_x, ray_y - sy, '1')) {
+        if (sx == 1) return 4;
+        return 2;
+    }
+
+    return 0;
+}
+
+function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
 {
-    // distance *= Math.cos(angle.angle - player.angle);
-    const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
+    distance *= Math.cos(angle.angle - player.angle);
+    const height: number = ((block_size / distance) * (WIDTH / 2));
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
-    //   const intensity = Math.max(0, 255 - distance);
-    const intensity = 255;
 
-    ctx.fillStyle = "black";
-    if(get_side(ray_x, ray_y, angle) == 1)
-        ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-    else if(get_side(ray_x, ray_y, angle) == 2)
-        ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-    else if(get_side(ray_x, ray_y, angle) == 3)
-        ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-    else if(get_side(ray_x, ray_y, angle) == 4)
-        ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+    ctx.fillStyle = "blue";
+    if(get_side(ray.x, ray.y, angle) == 1)
+        ctx.fillStyle = "red";
+    else if(get_side(ray.x, ray.y, angle) == 2)
+        ctx.fillStyle = "green";
+    else if(get_side(ray.x, ray.y, angle) == 3)
+        ctx.fillStyle = "blue";
+    else if(get_side(ray.x, ray.y, angle) == 4)
+        ctx.fillStyle = "purple";
 
     if(start_y < 0)
         start_y = 0;
     if(end_y > HEIGHT)
         end_y = HEIGHT;
 
-    let middle_up: number = start_y;
-    let middle_low: number = end_y;
-    while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
-    {
-        ctx.fillRect(i, middle_up, pixel_size, pixel_size);
-        ctx.fillRect(i, middle_low, pixel_size, pixel_size);
-        middle_up += pixel_size - 1;
-        middle_low -= pixel_size - 1;
-    }
+    ctx.fillRect(i, start_y, pixel_size, end_y - start_y);
+    
 }
 
 function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): any
@@ -277,39 +303,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     }
 
     if(!MODE && portalnum == 0)
-    {
-        distance *= Math.cos(angle.angle - player.angle);
-        const height: number = ((block_size / distance) * (WIDTH / 2));
-        let start_y = (HEIGHT - height) / 2;
-        let end_y = start_y + height;
-        //   const intensity = Math.max(0, 255 - distance);
-        const intensity = 255;
-
-        // ctx.fillStyle = "black";
-        if(get_side(ray.x, ray.y, angle) == 1)
-            ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-        else if(get_side(ray.x, ray.y, angle) == 2)
-            ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-        else if(get_side(ray.x, ray.y, angle) == 3)
-            ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-        else if(get_side(ray.x, ray.y, angle) == 4)
-            ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
-
-        if(start_y < 0)
-            start_y = 0;
-        if(end_y > HEIGHT)
-            end_y = HEIGHT;
-
-        let middle_up: number = start_y;
-        let middle_low: number = end_y;
-        while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
-        {
-            ctx.fillRect(i, middle_up, pixel_size, pixel_size);
-            ctx.fillRect(i, middle_low, pixel_size, pixel_size);
-            middle_up += pixel_size - 1;
-            middle_low -= pixel_size - 1;
-        }
-    }
+        run_3d(ctx, player, angle, i, distance, ray);
     return [distance, ray];
 }
 
