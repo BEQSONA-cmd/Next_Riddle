@@ -3,7 +3,7 @@ import { block_size, map, map_structure } from "./Map";
 import { WIDTH, HEIGHT } from "./Player";
 
 const pixel_size: number = 4;
-const MODE: number = 0;
+const MODE: number = 1;
 
 function get_side(ray_x: number, ray_y: number, angle: number): number {
     let sx: number = -1;
@@ -71,7 +71,7 @@ function get_ea(ray_x: number, x : number)
 function draw_one_ray(ctx: any, player: any, ray_angle_first: number, i: number) {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
-    let ray_angle: number = ray_angle_first;
+    let ray_angle: number = player.angle
 
     let cos_angle: number = Math.cos(ray_angle);
     let sin_angle: number = Math.sin(ray_angle);
