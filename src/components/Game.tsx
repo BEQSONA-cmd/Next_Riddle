@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { handleKeyDown, handleKeyUp, keys } from "./Keys";
-import { player, WIDTH, HEIGHT } from "./Player";
+import { player, WIDTH, HEIGHT, update_position } from "./Player";
 import { draw_map, map, init_map_structure } from "./Map";
-import { draw_one_ray, pixel_size, MODE, update_position } from "./Draw";
+import { draw_one_ray, pixel_size, MODE } from "./Draw";
+import { IAngle } from "@/utils/types";
 
 // pi / 2 = 90 degrees
 // pi = 180 degrees
@@ -33,11 +34,15 @@ const Game = () => {
 
             let fracrion: number = Math.PI / 3 / WIDTH;
             fracrion = fracrion * pixel_size;
-            let start_x: number = player.angle - Math.PI / 6;
+            let ray_angle: IAngle = { cos_angle: 0, sin_angle: 0, angle: 0 };
+            ray_angle.angle = player.angle - Math.PI / 6;
 
-            for (let i = 0; i < WIDTH; i += pixel_size) {
-                draw_one_ray(ctx, player, start_x, i);
-                start_x += fracrion;
+            for (let i = 0; i < WIDTH; i += pixel_size) 
+            {
+                ray_angle.cos_angle = Math.cos(ray_angle.angle);
+                ray_angle.sin_angle = Math.sin(ray_angle.angle);
+                draw_one_ray(ctx, player, ray_angle, i);
+                ray_angle.angle += fracrion;
             }
 
             requestAnimationFrame(gameLoop);
