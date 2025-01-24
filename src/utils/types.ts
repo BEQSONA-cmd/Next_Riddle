@@ -15,3 +15,8 @@ export interface IAngle {
     sin_angle: number;
     angle: number;
 }
+
+export interface IRay {
+    x: number;
+    y: number;
+}
