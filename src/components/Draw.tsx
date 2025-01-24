@@ -77,36 +77,36 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
     const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
-  //   const intensity = Math.max(0, 255 - distance);
+    //   const intensity = Math.max(0, 255 - distance);
     const intensity = 255;
-  
-    ctx.fillStyle = "blue";
+
+    ctx.fillStyle = "black";
     if(get_side(ray_x, ray_y, angle.angle) == 1)
-      ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+        ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
     else if(get_side(ray_x, ray_y, angle.angle) == 2)
-      ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+        ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
     else if(get_side(ray_x, ray_y, angle.angle) == 3)
-      ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+        ctx.fillStyle = `rgb(0, 0, ${intensity})`;
     else if(get_side(ray_x, ray_y, angle.angle) == 4)
-      ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
-  
+        ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+
     if(start_y < 0)
-      start_y = 0;
+        start_y = 0;
     if(end_y > HEIGHT)
-      end_y = HEIGHT;
-  
+        end_y = HEIGHT;
+
     let middle_up: number = start_y;
     let middle_low: number = end_y;
     while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
     {
-      ctx.fillRect(i, middle_up, pixel_size, pixel_size);
-      ctx.fillRect(i, middle_low, pixel_size, pixel_size);
-      middle_up += pixel_size - 1;
-      middle_low -= pixel_size - 1;
+        ctx.fillRect(i, middle_up, pixel_size, pixel_size);
+        ctx.fillRect(i, middle_low, pixel_size, pixel_size);
+        middle_up += pixel_size - 1;
+        middle_low -= pixel_size - 1;
     }
 }
 
-function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0, distance: number = 0) 
+function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): number
 {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
@@ -115,7 +115,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     let cos_angle: number = angle.cos_angle;
     let sin_angle: number = angle.sin_angle;
 
-    if(portalnum > 2) return;
+    if(portalnum > 2) return 0;
 
     while (!is_touch(ray_x, ray_y, '1') && !is_touch(ray_x, ray_y, 'S') && !is_touch(ray_x, ray_y, 'N') && !is_touch(ray_x, ray_y, 'W') && !is_touch(ray_x, ray_y, 'E'))
     {
@@ -129,7 +129,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         ray_y += sin_angle;
     }
     
-    distance += fixed_dist(player.x, player.y, ray_x, ray_y);
+    let distance = fixed_dist(player.x, player.y, ray_x, ray_y);
     if (is_touch(ray_x, ray_y, 'S')) 
     {
         let [no_ray_x, no_ray_y] = [0, 0];
@@ -155,7 +155,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             y: no_ray_y + angle.sin_angle,
         }
 
-        draw_one_ray(ctx, new_player, angle, i, portalnum + 1, distance);
+        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
 
     }
     else if(is_touch(ray_x, ray_y, 'N'))
@@ -184,7 +184,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             y: so_ray_y + angle.sin_angle,
         }
 
-        draw_one_ray(ctx, new_player, angle, i, portalnum + 1, distance);
+        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
 
     }
     else if(is_touch(ray_x, ray_y, 'W'))
@@ -214,7 +214,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             y: ea_ray_y + angle.sin_angle,
         }
 
-        draw_one_ray(ctx, new_player, angle, i, portalnum + 1, distance);
+        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
 
     }
     else if(is_touch(ray_x, ray_y, 'E'))
@@ -243,14 +243,44 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             y: we_ray_y + angle.sin_angle,
         }
 
-        draw_one_ray(ctx, new_player, angle, i, portalnum + 1, distance);
+        distance += draw_one_ray(ctx, new_player, angle, i, portalnum + 1);
         
     }
 
     if(!MODE)
     {
-        run_3d(ctx, player, angle, i, distance, ray_x, ray_y);
+        const height: number = ((block_size / distance) * (WIDTH / 2)) * 1.3;
+        let start_y = (HEIGHT - height) / 2;
+        let end_y = start_y + height;
+        //   const intensity = Math.max(0, 255 - distance);
+        const intensity = 255;
+
+        ctx.fillStyle = "black";
+        if(get_side(ray_x, ray_y, angle.angle) == 1)
+            ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+        else if(get_side(ray_x, ray_y, angle.angle) == 2)
+            ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+        else if(get_side(ray_x, ray_y, angle.angle) == 3)
+            ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+        else if(get_side(ray_x, ray_y, angle.angle) == 4)
+            ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+
+        if(start_y < 0)
+            start_y = 0;
+        if(end_y > HEIGHT)
+            end_y = HEIGHT;
+
+        let middle_up: number = start_y;
+        let middle_low: number = end_y;
+        while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
+        {
+            ctx.fillRect(i, middle_up, pixel_size, pixel_size);
+            ctx.fillRect(i, middle_low, pixel_size, pixel_size);
+            middle_up += pixel_size - 1;
+            middle_low -= pixel_size - 1;
+        }
     }
+    return distance;
 }
 
 export { draw_one_ray, pixel_size, MODE, is_touch, get_side, get_no, get_so, get_we, get_ea, run_3d };
