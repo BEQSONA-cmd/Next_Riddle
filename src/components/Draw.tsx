@@ -108,7 +108,6 @@ function get_side(ray_x: number, ray_y: number, angle: IAngle): number {
 
 function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
 {
-    distance *= Math.cos(angle.angle - player.angle);
     const height: number = ((block_size / distance) * (WIDTH / 2));
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
@@ -129,7 +128,6 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
         end_y = HEIGHT;
 
     ctx.fillRect(i, start_y, pixel_size, end_y - start_y);
-    
 }
 
 function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): any
@@ -303,7 +301,10 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     }
 
     if(!MODE && portalnum == 0)
+    {
+        distance *= Math.cos(angle.angle - player.angle);
         run_3d(ctx, player, angle, i, distance, ray);
+    }
     return [distance, ray];
 }
 
