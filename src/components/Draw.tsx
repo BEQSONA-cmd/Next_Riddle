@@ -4,7 +4,7 @@ import { WIDTH, HEIGHT } from "./Player";
 import { IAngle, IPlayer, IRay } from "@/utils/types";
 
 const pixel_size: number = 4;
-const MODE: number = 0;
+const MODE: number = 1;
 const MAX_RECURSION: number = 10;
 
 function is_touch(x: number, y: number, c: any) 
@@ -20,6 +20,70 @@ function is_touch(x: number, y: number, c: any)
     }
 
     if (map[map_y][map_x] === c) return 1;
+
+    return 0;
+}
+
+function is_touch_any(x: number, y: number)
+{
+    if(is_touch(x, y, '1'))
+        return 1;
+    else if(is_touch(x, y, 'S'))
+        return 1;
+    else if(is_touch(x, y, 'N'))
+        return 1;
+    else if(is_touch(x, y, 'W'))
+        return 1;
+    else if(is_touch(x, y, 'E'))
+        return 1;
+    return 0;
+}
+
+function get_side(ray_x: number, ray_y: number, angle: IAngle): number 
+{
+    let sx: number = 0;
+    let sy: number = 0;
+    
+    if (angle.cos_angle > 0) 
+        sx = 1;
+    if (angle.sin_angle > 0) 
+        sy = 1;
+    if (angle.cos_angle < 0) 
+        sx = -1;
+    if (angle.sin_angle < 0)
+        sy = -1;
+
+    if (is_touch_any(ray_x - sx, ray_y) && !is_touch_any(ray_x, ray_y - sy)) 
+    {
+        if (sy == 1) 
+            return 3;
+        else if(sy == -1) 
+            return 1;
+        
+    }
+    if (is_touch_any(ray_x, ray_y - sy) && !is_touch_any(ray_x - sx, ray_y))
+    {
+        if (sx == 1) 
+            return 4;
+        else if(sx == -1) 
+            return 2;
+    }
+
+    return 0;
+}
+
+function is_touch_side(x: number, y: number, angle: IAngle)
+{
+    if (is_touch(x, y, '1'))
+        return 1;
+    else if (is_touch(x, y, 'S') && get_side(x, y, angle) == 1)
+        return 1;
+    else if (is_touch(x, y, 'N') && get_side(x, y, angle) == 3)
+        return 1;
+    else if (is_touch(x, y, 'W') && get_side(x, y, angle) == 4)
+        return 1;
+    else if (is_touch(x, y, 'E') && get_side(x, y, angle) == 2)
+        return 1;
 
     return 0;
 }
@@ -87,24 +151,6 @@ function get_ea(ray_x: number, x : number)
 //     }
 // }
 
-function get_side(ray_x: number, ray_y: number, angle: IAngle): number {
-    let sx: number = -1;
-    let sy: number = -1;
-    
-    if (angle.cos_angle> 0) sx = 1;
-    if (angle.sin_angle > 0) sy = 1;
-
-    if (is_touch(ray_x - sx, ray_y, '1')) {
-        if (sy == 1) return 3;
-        return 1;
-    }
-    if (is_touch(ray_x, ray_y - sy, '1')) {
-        if (sx == 1) return 4;
-        return 2;
-    }
-
-    return 0;
-}
 
 function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
 {
@@ -112,14 +158,14 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
 
-    ctx.fillStyle = "blue";
-    if(get_side(ray.x, ray.y, angle) == 1)
+    ctx.fillStyle = "black";
+    if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
         ctx.fillStyle = "red";
-    else if(get_side(ray.x, ray.y, angle) == 2)
+    else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
         ctx.fillStyle = "green";
-    else if(get_side(ray.x, ray.y, angle) == 3)
+    else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
         ctx.fillStyle = "blue";
-    else if(get_side(ray.x, ray.y, angle) == 4)
+    else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
         ctx.fillStyle = "purple";
 
     if(start_y < 0)
@@ -137,7 +183,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
 
     if(portalnum > MAX_RECURSION) return [0, { x: 0, y: 0 }];
 
-    while (!is_touch(ray_x, ray_y, '1') && !is_touch(ray_x, ray_y, 'S') && !is_touch(ray_x, ray_y, 'N') && !is_touch(ray_x, ray_y, 'W') && !is_touch(ray_x, ray_y, 'E'))
+    while (!is_touch_side(ray_x, ray_y, angle))
     {
         if(MODE)
         {
@@ -154,7 +200,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     let new_player = { x: 0, y: 0, angle: 0}
     let new_angle = { cos_angle: 0, sin_angle: 0, angle: 0,}
 
-    if (is_touch(ray_x, ray_y, 'S')) 
+    if (is_touch(ray_x, ray_y, 'S') && get_side(ray_x, ray_y, angle) == 1)
     {
         let [no_ray_x, no_ray_y] = [0, 0];
 
@@ -190,7 +236,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         distance += dist;
         ray = new_ray;
     }
-    else if(is_touch(ray_x, ray_y, 'N'))
+    else if(is_touch(ray_x, ray_y, 'N') && get_side(ray_x, ray_y, angle) == 3)
     {
         let [so_ray_x, so_ray_y] = [0, 0];
         if(map_structure.south)
@@ -227,7 +273,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         distance += dist;
         ray = new_ray;
     }
-    else if(is_touch(ray_x, ray_y, 'W'))
+    else if(is_touch(ray_x, ray_y, 'W') && get_side(ray_x, ray_y, angle) == 4)
     {
         let [ea_ray_x, ea_ray_y] = [0, 0];
         if(map_structure.east)
@@ -263,7 +309,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         distance += dist;
         ray = new_ray;
     }
-    else if(is_touch(ray_x, ray_y, 'E'))
+    else if(is_touch(ray_x, ray_y, 'E') && get_side(ray_x, ray_y, angle) == 2)
     {
         let [we_ray_x, we_ray_y] = [0, 0];
         if(map_structure.west)
