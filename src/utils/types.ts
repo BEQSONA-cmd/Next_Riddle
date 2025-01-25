@@ -2,6 +2,7 @@ export interface IPlayer {
     x: number;
     y: number;
     angle: number;
+    static_angle: number;
     width: number;
     height: number;
     color: string;

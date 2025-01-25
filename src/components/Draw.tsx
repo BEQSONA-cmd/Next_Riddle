@@ -37,61 +37,61 @@ function get_ea(ray_x: number, x : number)
     return [map_structure.east_x, ea_y];
 }
 
-// function run_3d_old(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
-// {
-//     distance *= Math.cos(angle.angle - player.angle);
-//     const height: number = ((block_size / distance) * (WIDTH / 2));
-//     let start_y = (HEIGHT - height) / 2;
-//     let end_y = start_y + height;
-//     //   const intensity = Math.max(0, 255 - distance);
-//     const intensity = 255;
+function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle)
+{
+    let y = end_y;
 
-    // ctx.fillStyle = "black";
-    // if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
-    //     ctx.fillStyle = "red";
-    // else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
-    //     ctx.fillStyle = "green";
-    // else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
-    //     ctx.fillStyle = "blue";
-    // else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
-    //     ctx.fillStyle = "purple";
+    while (y < height - pixel_size) 
+    {
+        let distance = ((block_size / 3) * HEIGHT) / (y - HEIGHT / 2);
+        distance /= Math.cos(ray_angle.angle - player.static_angle);
 
-//     if(start_y < 0)
-//         start_y = 0;
-//     if(end_y > HEIGHT)
-//         end_y = HEIGHT;
+        const floor_x = player.x + distance * ray_angle.cos_angle;
+        const floor_y = player.y + distance * ray_angle.sin_angle;
 
-//     let middle_up: number = start_y;
-//     let middle_low: number = end_y;
-//     while(middle_up < (HEIGHT / 2) + 1 && middle_low > (HEIGHT / 2) - 1)
-//     {
-//         ctx.fillRect(i, middle_up, pixel_size, pixel_size);
-//         ctx.fillRect(i, middle_low, pixel_size, pixel_size);
-//         middle_up += pixel_size - 1;
-//         middle_low -= pixel_size - 1;
-//     }
-// }
+        const tile_x = Math.floor(floor_x / block_size);
+        const tile_y = Math.floor(floor_y / block_size);
 
-// function draw_floor(ctx: any, i: number, end_y: number, height: number)
-// {
-//     // drawing floor like chess board
-//     let color_1: string = "rgb(50, 50, 50)"; 
-//     let color_2: string = "white";
+        let color: string = "";
+        if ((tile_x + tile_y) % 2 === 0)
+        {
+            const color_1 = Math.floor(255 - distance);
+            color = `rgb(${color_1}, ${color_1}, ${color_1})`;
+        }
+        else
+        {
+            const color_2 = Math.floor((255 - distance) / 2);
+            color = `rgb(${color_2}, ${color_2}, ${color_2})`;
+        }
 
-//     let y: number = end_y;
-//     while(y < height)
-//     {
-//     }
+        ctx.fillStyle = color;
+        ctx.fillRect(i, y, pixel_size, pixel_size);
 
-// }
+        y += pixel_size / 2;
+    }
+}
 
-function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
+
+function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay, old_angle: IAngle)
 {
     const height: number = ((block_size / distance) * (WIDTH / 2));
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
+    start_y -= pixel_size;
+    end_y += pixel_size;
+    let intensity = 255 - distance;
+    if(intensity < 0)
+        intensity = 0;
 
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = "black";
+    if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
+        ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+    else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
+        ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+    else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
+        ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+    else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
+        ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
 
     if(start_y < 0)
         start_y = 0;
@@ -99,7 +99,7 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
         end_y = HEIGHT;
 
     ctx.fillRect(i, start_y, pixel_size, end_y - start_y);
-    // draw_floor(ctx, i, end_y, HEIGHT);
+    draw_floor(ctx, i, end_y, HEIGHT, player, old_angle);
 }
 
 function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): any
@@ -126,6 +126,8 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     let new_player = { x: 0, y: 0, angle: 0}
     let new_angle = { cos_angle: 0, sin_angle: 0, angle: 0,}
 
+    let old_angle: IAngle = { cos_angle: angle.cos_angle, sin_angle: angle.sin_angle, angle: angle.angle };
+
     if (is_touch_thin(ray_x, ray_y, 'S'))
     {
         let [no_ray_x, no_ray_y] = [0, 0];
@@ -142,7 +144,6 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
             angle.sin_angle = Math.sin(angle.angle - Math.PI / 2);
             new_angle.angle = angle.angle - Math.PI / 2;
             new_player.angle = player.angle - Math.PI / 2;
-
         }
         else if(map_structure.east)
         {
@@ -275,9 +276,9 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     if(!MODE && portalnum == 0)
     {
         distance *= Math.cos(angle.angle - player.angle);
-        run_3d(ctx, player, angle, i, distance, ray);
+        draw_one_line(ctx, player, angle, i, distance, ray, old_angle);
     }
     return [distance, ray];
 }
 
-export { draw_one_ray, pixel_size, MODE, touch_any, is_touch_thin, get_side, get_no, get_so, get_we, get_ea, run_3d };
+export { draw_one_ray, pixel_size, MODE, touch_any, is_touch_thin, get_side, get_no, get_so, get_we, get_ea };

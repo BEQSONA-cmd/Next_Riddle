@@ -10,6 +10,7 @@ const player:IPlayer = {
     x: WIDTH / 2 - 25,
     y: HEIGHT / 2 - 25,
     angle: Math.PI + Math.PI / 2,
+    static_angle: Math.PI + Math.PI / 2,
     width: 5,
     height: 5,
     color: "yellow",
@@ -114,9 +115,15 @@ function update_position(player: any, keys: any, map: any)
     const angle_speed: number = 0.1;
 
     if (keys["ArrowLeft"])
+    {
         player.angle -= angle_speed;
+        player.static_angle -= angle_speed;
+    }
     else if (keys["ArrowRight"])
+    {
         player.angle += angle_speed;
+        player.static_angle += angle_speed;
+    }
 
     const cos_angle = Math.cos(player.angle);
     const sin_angle = Math.sin(player.angle);
