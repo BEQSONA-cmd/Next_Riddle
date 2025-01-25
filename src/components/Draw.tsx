@@ -40,14 +40,17 @@ function get_ea(ray_x: number, x : number)
 function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle)
 {
     let y = end_y;
+    let block = 0;
+    if(player.change === true)
+        block = block_size;
 
     while (y < height - pixel_size) 
     {
         let distance = ((block_size / 3) * HEIGHT) / (y - HEIGHT / 2);
-        distance /= Math.cos(ray_angle.angle - player.static_angle);
+        distance /= Math.cos(ray_angle.angle - player.angle);
 
-        const floor_x = player.x + distance * ray_angle.cos_angle;
-        const floor_y = player.y + distance * ray_angle.sin_angle;
+        const floor_x = (player.x + block) + distance * ray_angle.cos_angle;
+        const floor_y = (player.y) + distance * ray_angle.sin_angle;
 
         const tile_x = Math.floor(floor_x / block_size);
         const tile_y = Math.floor(floor_y / block_size);
