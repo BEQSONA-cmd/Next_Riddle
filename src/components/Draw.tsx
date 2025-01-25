@@ -46,15 +46,15 @@ function get_ea(ray_x: number, x : number)
 //     //   const intensity = Math.max(0, 255 - distance);
 //     const intensity = 255;
 
-//     // ctx.fillStyle = "black";
-//     if(get_side(ray.x, ray.y, angle) == 1)
-//         ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-//     else if(get_side(ray.x, ray.y, angle) == 2)
-//         ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-//     else if(get_side(ray.x, ray.y, angle) == 3)
-//         ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-//     else if(get_side(ray.x, ray.y, angle) == 4)
-//         ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+    // ctx.fillStyle = "black";
+    // if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
+    //     ctx.fillStyle = "red";
+    // else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
+    //     ctx.fillStyle = "green";
+    // else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
+    //     ctx.fillStyle = "blue";
+    // else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
+    //     ctx.fillStyle = "purple";
 
 //     if(start_y < 0)
 //         start_y = 0;
@@ -72,6 +72,18 @@ function get_ea(ray_x: number, x : number)
 //     }
 // }
 
+// function draw_floor(ctx: any, i: number, end_y: number, height: number)
+// {
+//     // drawing floor like chess board
+//     let color_1: string = "rgb(50, 50, 50)"; 
+//     let color_2: string = "white";
+
+//     let y: number = end_y;
+//     while(y < height)
+//     {
+//     }
+
+// }
 
 function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay)
 {
@@ -79,15 +91,7 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
     let start_y = (HEIGHT - height) / 2;
     let end_y = start_y + height;
 
-    ctx.fillStyle = "black";
-    if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
-        ctx.fillStyle = "red";
-    else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
-        ctx.fillStyle = "green";
-    else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
-        ctx.fillStyle = "blue";
-    else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
-        ctx.fillStyle = "purple";
+    ctx.fillStyle = "blue";
 
     if(start_y < 0)
         start_y = 0;
@@ -95,6 +99,7 @@ function run_3d(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: n
         end_y = HEIGHT;
 
     ctx.fillRect(i, start_y, pixel_size, end_y - start_y);
+    // draw_floor(ctx, i, end_y, HEIGHT);
 }
 
 function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): any
