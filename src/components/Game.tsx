@@ -10,6 +10,8 @@ import { IAngle } from "@/utils/types";
 // pi * 3 / 2 = 270 degrees
 // pi * 2 = 360 degrees
 
+const FOV: number = Math.PI / 2;
+
 const Game = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -32,11 +34,11 @@ const Game = () => {
                 draw_map(ctx, map);
             }
 
-            let fracrion: number = Math.PI / 3 / WIDTH;
+            let fracrion: number = FOV / WIDTH;
             fracrion = fracrion * pixel_size;
             let ray_angle: IAngle = { cos_angle: 0, sin_angle: 0, angle: 0 };
-            ray_angle.angle = player.angle - Math.PI / 6;
-
+            ray_angle.angle = player.angle - FOV / 2;
+            
             for (let i = 0; i < WIDTH; i += pixel_size) 
             {
                 ray_angle.cos_angle = Math.cos(ray_angle.angle);

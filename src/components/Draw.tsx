@@ -42,10 +42,47 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
 {
     let y = end_y;
     let block = 0;
-    if(player.change)
+    if(!player.change)
         block = block_size;
 
     while (y < height - pixel_size) 
+    {
+        let distance = ((block_size / 3) * HEIGHT) / (y - HEIGHT / 2);
+        distance /= Math.cos(ray_angle.angle - player.angle);
+
+        const floor_x = (player.x + block) + distance * ray_angle.cos_angle;
+        const floor_y = (player.y) + distance * ray_angle.sin_angle;
+
+        const tile_x = Math.floor(floor_x / block_size);
+        const tile_y = Math.floor(floor_y / block_size);
+
+        let color: string = "";
+        if ((tile_x + tile_y) % 2 === 0)
+        {
+            const color_1 = Math.floor(255 - distance) / 2;
+            color = `rgb(${color_1}, ${color_1}, ${color_1})`;
+        }
+        else
+        {
+            const color_2 = Math.floor((255 - distance) / 4);
+            color = `rgb(${color_2}, ${color_2}, ${color_2})`;
+        }
+
+        ctx.fillStyle = color;
+        ctx.fillRect(i, y, pixel_size, pixel_size);
+
+        y += pixel_size / 2;
+    }
+}
+
+function draw_ceiling(ctx: any, i: number, start_y: number, height: number, player: IPlayer, ray_angle: IAngle)
+{
+    let y = start_y;
+    let block = 0;
+    if(player.change)
+        block = block_size;
+    ray_angle.angle = ray_angle.angle + Math.PI;
+    while (y > 0) 
     {
         let distance = ((block_size / 3) * HEIGHT) / (y - HEIGHT / 2);
         distance /= Math.cos(ray_angle.angle - player.angle);
@@ -71,7 +108,7 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         ctx.fillStyle = color;
         ctx.fillRect(i, y, pixel_size, pixel_size);
 
-        y += pixel_size / 2;
+        y -= pixel_size / 2;
     }
 }
 
@@ -104,6 +141,7 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
 
     ctx.fillRect(i, start_y, pixel_size, end_y - start_y);
     draw_floor(ctx, i, end_y, HEIGHT, player, old_angle);
+    draw_ceiling(ctx, i, start_y, HEIGHT, player, old_angle);
 }
 
 function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): any
