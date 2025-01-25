@@ -1,4 +1,4 @@
-import { is_touch, is_touch_thin } from "./Draw";
+import { is_touch_thin } from "./Touch";
 import { map_structure, block_size } from "./Map";
 import { get_no, get_so, get_we, get_ea, pixel_size } from "./Draw";
 import { IAngle, IPlayer } from "@/utils/types";
@@ -147,10 +147,10 @@ function update_position(player: any, keys: any, map: any)
     }
 
     player.x += dx;
-    if(is_touch(player.x, player.y, '1'))
+    if(is_touch_thin(player.x, player.y, '1'))
         player.x -= dx;
     player.y += dy;
-    if(is_touch(player.x, player.y, '1'))
+    if(is_touch_thin(player.x, player.y, '1'))
         player.y -= dy;
 
     check_portal(player, dx, dy);
