@@ -29,6 +29,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
 
     if (is_touch_thin(x, y, 'S') )
     {
+        player.change = !player.change;
         if(map_structure.north) 
         {
             [player.x, player.y] = get_no(player.x, map_structure.sout_x);
@@ -40,17 +41,16 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.y = map_structure.west_y - diff_x + block_size;
             player.x = map_structure.west_x - pixel_size;
             player.angle = player.angle - Math.PI / 2;
-            player.change = !player.change;
         }
         else if(map_structure.east)
         {
             [player.x, player.y] = get_ea(player.x, map_structure.sout_x);
             player.angle = player.angle + Math.PI / 2;
-            player.change = !player.change;
         }
     }
     else if (is_touch_thin(x, y, 'N'))
     {
+        player.change = !player.change;
         if(map_structure.south)
         {
             [player.x, player.y] = get_so(player.x, map_structure.north_x);
@@ -60,7 +60,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             [player.x, player.y] = get_we(player.x, map_structure.north_x);
             player.x = player.x - pixel_size;
             player.angle = player.angle + Math.PI / 2;
-            player.change = !player.change;
         }
         else if(map_structure.east)
         {
@@ -68,11 +67,11 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.y = map_structure.east_y - diff_x + block_size;
             player.x = map_structure.east_x;
             player.angle = player.angle - Math.PI / 2;
-            player.change = !player.change;
         }
     }
     else if (is_touch_thin(x, y, 'W'))
     {
+        player.change = !player.change
         if(map_structure.east)
         {
             [player.x, player.y] = get_ea(player.y, map_structure.west_y);
@@ -82,7 +81,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             [player.x, player.y] = get_no(player.y, map_structure.west_y);
             player.y = player.y - pixel_size;
             player.angle = player.angle - Math.PI / 2;
-            player.change = !player.change;
         }
         else if(map_structure.south)
         {
@@ -90,11 +88,11 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.x = map_structure.sout_x - diff_x + block_size;
             player.y = map_structure.sout_y;
             player.angle = player.angle + Math.PI / 2;
-            player.change = !player.change;
         }
     }
     else if (is_touch_thin(x, y + dy, 'E'))
     {
+        player.change = !player.change;
         if(map_structure.west)
         {
             [player.x, player.y] = get_we(player.y, map_structure.east_y);
@@ -106,13 +104,11 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.x = map_structure.north_x - diff_x + block_size;
             player.y = map_structure.north_y - pixel_size;
             player.angle = player.angle + Math.PI / 2;
-            player.change = !player.change;
         }
         else if(map_structure.south)
         {
             [player.x, player.y] = get_so(player.y, map_structure.east_y);
             player.angle = player.angle - Math.PI / 2;
-            player.change = !player.change;
         }
     }
 }

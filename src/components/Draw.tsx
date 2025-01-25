@@ -37,11 +37,12 @@ function get_ea(ray_x: number, x : number)
     return [map_structure.east_x, ea_y];
 }
 
+
 function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle)
 {
     let y = end_y;
     let block = 0;
-    if(player.change === true)
+    if(player.change)
         block = block_size;
 
     while (y < height - pixel_size) 
