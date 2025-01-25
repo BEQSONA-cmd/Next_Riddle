@@ -62,6 +62,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             [player.x, player.y] = get_we(player.x, map_structure.north_x);
             player.x = player.x - pixel_size;
             player.angle = player.angle + Math.PI / 2;
+            change_map(map_list[2]);
+            init_map_structure();
         }
         else if(map_structure.east)
         {
@@ -69,8 +71,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.y = map_structure.east_y - diff_x + block_size;
             player.x = map_structure.east_x;
             player.angle = player.angle - Math.PI / 2;
-            change_map(map_list[2]);
-            init_map_structure();
         }
     }
     else if (is_touch_thin(x, y, 'W'))
@@ -79,6 +79,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         if(map_structure.east)
         {
             [player.x, player.y] = get_ea(player.y, map_structure.west_y);
+            change_map(map_list[3]);
+            init_map_structure();
         }
         else if(map_structure.north)
         {
@@ -92,8 +94,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.x = map_structure.sout_x - diff_x + block_size;
             player.y = map_structure.sout_y;
             player.angle = player.angle + Math.PI / 2;
-            change_map(map_list[0]);
-            init_map_structure();
         }
     }
     else if (is_touch_thin(x, y + dy, 'E'))
@@ -103,8 +103,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         {
             [player.x, player.y] = get_we(player.y, map_structure.east_y);
             player.x = player.x - pixel_size;
-            change_map(map_list[3]);
-            init_map_structure();
         }
         else if(map_structure.north)
         {
@@ -117,6 +115,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         {
             [player.x, player.y] = get_so(player.y, map_structure.east_y);
             player.angle = player.angle - Math.PI / 2;
+            change_map(map_list[0]);
+            init_map_structure();
         }
     }
 }
