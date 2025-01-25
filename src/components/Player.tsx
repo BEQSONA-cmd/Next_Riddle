@@ -1,10 +1,9 @@
-import { is_touch } from "./Draw";
+import { is_touch, is_touch_thin } from "./Draw";
 import { map_structure, block_size } from "./Map";
-import { get_no, get_so, get_we, get_ea, pixel_size, get_side } from "./Draw";
+import { get_no, get_so, get_we, get_ea, pixel_size } from "./Draw";
 import { IAngle, IPlayer } from "@/utils/types";
 const WIDTH = 800;
 const HEIGHT = 600;
-
 
 
 const player:IPlayer = {
@@ -27,7 +26,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
     let x: number = player.x + dx;
     let y: number = player.y + dy;
 
-    if (is_touch(x, y, 'S') )
+    if (is_touch_thin(x, y, 'S') )
     {
         if(map_structure.north) 
         {
@@ -47,7 +46,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.angle = player.angle + Math.PI / 2;
         }
     }
-    else if (is_touch(x, y, 'N'))
+    else if (is_touch_thin(x, y, 'N'))
     {
         if(map_structure.south)
         {
@@ -67,7 +66,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.angle = player.angle - Math.PI / 2;
         }
     }
-    else if (is_touch(x, y, 'W'))
+    else if (is_touch_thin(x, y, 'W'))
     {
         if(map_structure.east)
         {
@@ -87,7 +86,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.angle = player.angle + Math.PI / 2;
         }
     }
-    else if (is_touch(x, y + dy, 'E'))
+    else if (is_touch_thin(x, y + dy, 'E'))
     {
         if(map_structure.west)
         {

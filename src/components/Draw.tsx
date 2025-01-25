@@ -4,7 +4,7 @@ import { WIDTH, HEIGHT } from "./Player";
 import { IAngle, IPlayer, IRay } from "@/utils/types";
 
 const pixel_size: number = 4;
-const MODE: number = 1;
+const MODE: number = 0;
 const MAX_RECURSION: number = 10;
 
 function is_touch(x: number, y: number, c: any) 
@@ -20,6 +20,61 @@ function is_touch(x: number, y: number, c: any)
     }
 
     if (map[map_y][map_x] === c) return 1;
+
+    return 0;
+}
+
+function is_touch_thin(px: number, py: number, c: any) 
+{
+    const block_x: number = px / block_size;
+    const block_y: number = py / block_size;
+    const thickness = block_size / 8;
+
+    const map_x = Math.floor(block_x);
+    const map_y = Math.floor(block_y);
+
+    if (map_y < 0 || map_y >= map.length || map_x < 0 || map_x >= map[0].length) {
+        return 1;
+    }
+
+    if (map[map_y][map_x] === c)
+    {
+        if(c === 'S')
+        {
+            let x_in_map = map_x * block_size;
+            let y_in_map = map_y * block_size + (block_size - thickness);
+    
+            if (px >= x_in_map && px <= x_in_map + block_size && py >= y_in_map && py <= y_in_map + thickness)
+                return 1;
+        }
+        else if(c === 'N')
+        {
+            let x_in_map = map_x * block_size;
+            let y_in_map = map_y * block_size;
+    
+            if (px >= x_in_map && px <= x_in_map + block_size && py >= y_in_map && py <= y_in_map + thickness)
+                return 1;
+        }
+        else if(c === 'W')
+        {
+            let x_in_map = map_x * block_size;
+            let y_in_map = map_y * block_size;
+    
+            if (px >= x_in_map && px <= x_in_map + thickness && py >= y_in_map && py <= y_in_map + block_size)
+                return 1;
+        }
+        else if(c === 'E')
+        {
+            let x_in_map = map_x * block_size + (block_size - thickness);
+            let y_in_map = map_y * block_size;
+    
+            if (px >= x_in_map && px <= x_in_map + thickness && py >= y_in_map && py <= y_in_map + block_size)
+                return 1;
+        }
+        else
+            return 1;
+    }
+    
 
     return 0;
 }
@@ -74,15 +129,15 @@ function get_side(ray_x: number, ray_y: number, angle: IAngle): number
 
 function is_touch_side(x: number, y: number, angle: IAngle)
 {
-    if (is_touch(x, y, '1'))
+    if (is_touch_thin(x, y, '1'))
         return 1;
-    else if (is_touch(x, y, 'S') && get_side(x, y, angle) == 1)
+    else if (is_touch_thin(x, y, 'S') && get_side(x, y, angle) == 1)
         return 1;
-    else if (is_touch(x, y, 'N') && get_side(x, y, angle) == 3)
+    else if (is_touch_thin(x, y, 'N') && get_side(x, y, angle) == 3)
         return 1;
-    else if (is_touch(x, y, 'W') && get_side(x, y, angle) == 4)
+    else if (is_touch_thin(x, y, 'W') && get_side(x, y, angle) == 4)
         return 1;
-    else if (is_touch(x, y, 'E') && get_side(x, y, angle) == 2)
+    else if (is_touch_thin(x, y, 'E') && get_side(x, y, angle) == 2)
         return 1;
 
     return 0;
@@ -200,7 +255,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     let new_player = { x: 0, y: 0, angle: 0}
     let new_angle = { cos_angle: 0, sin_angle: 0, angle: 0,}
 
-    if (is_touch(ray_x, ray_y, 'S') && get_side(ray_x, ray_y, angle) == 1)
+    if (is_touch(ray_x, ray_y, 'S'))
     {
         let [no_ray_x, no_ray_y] = [0, 0];
 
@@ -236,7 +291,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         distance += dist;
         ray = new_ray;
     }
-    else if(is_touch(ray_x, ray_y, 'N') && get_side(ray_x, ray_y, angle) == 3)
+    else if(is_touch(ray_x, ray_y, 'N'))
     {
         let [so_ray_x, so_ray_y] = [0, 0];
         if(map_structure.south)
@@ -273,7 +328,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         distance += dist;
         ray = new_ray;
     }
-    else if(is_touch(ray_x, ray_y, 'W') && get_side(ray_x, ray_y, angle) == 4)
+    else if(is_touch(ray_x, ray_y, 'W'))
     {
         let [ea_ray_x, ea_ray_y] = [0, 0];
         if(map_structure.east)
@@ -309,7 +364,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         distance += dist;
         ray = new_ray;
     }
-    else if(is_touch(ray_x, ray_y, 'E') && get_side(ray_x, ray_y, angle) == 2)
+    else if(is_touch(ray_x, ray_y, 'E'))
     {
         let [we_ray_x, we_ray_y] = [0, 0];
         if(map_structure.west)
@@ -354,4 +409,4 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
     return [distance, ray];
 }
 
-export { draw_one_ray, pixel_size, MODE, is_touch, get_side, get_no, get_so, get_we, get_ea, run_3d };
+export { draw_one_ray, pixel_size, MODE, is_touch, is_touch_thin, get_side, get_no, get_so, get_we, get_ea, run_3d };
