@@ -1,5 +1,5 @@
 import { is_touch_thin } from "./Touch";
-import { map_structure, block_size } from "./Map";
+import { map_structure, block_size, map_list, change_map, init_map_structure } from "./Map";
 import { get_no, get_so, get_we, get_ea, pixel_size } from "./Draw";
 import { IAngle, IPlayer } from "@/utils/types";
 const WIDTH = 800;
@@ -7,8 +7,8 @@ const HEIGHT = 600;
 
 
 const player:IPlayer = {
-    x: WIDTH / 2 - 25,
-    y: HEIGHT / 2 - 25,
+    x: 7 * block_size + block_size / 2,
+    y: 5 * block_size + block_size / 2,
     angle: Math.PI + Math.PI / 2,
     change: false,
     width: 5,
@@ -34,6 +34,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         {
             [player.x, player.y] = get_no(player.x, map_structure.sout_x);
             player.y -= pixel_size;
+            change_map(map_list[1]);
+            init_map_structure();
         }
         else if(map_structure.west)
         {
@@ -67,6 +69,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.y = map_structure.east_y - diff_x + block_size;
             player.x = map_structure.east_x;
             player.angle = player.angle - Math.PI / 2;
+            change_map(map_list[2]);
+            init_map_structure();
         }
     }
     else if (is_touch_thin(x, y, 'W'))
@@ -88,6 +92,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             player.x = map_structure.sout_x - diff_x + block_size;
             player.y = map_structure.sout_y;
             player.angle = player.angle + Math.PI / 2;
+            change_map(map_list[0]);
+            init_map_structure();
         }
     }
     else if (is_touch_thin(x, y + dy, 'E'))
@@ -97,6 +103,8 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         {
             [player.x, player.y] = get_we(player.y, map_structure.east_y);
             player.x = player.x - pixel_size;
+            change_map(map_list[3]);
+            init_map_structure();
         }
         else if(map_structure.north)
         {

@@ -13,7 +13,7 @@ import { IAngle } from "@/utils/types";
 const Game = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    init_map_structure(map);
+    init_map_structure();
 
     useEffect(() => {
         const canvas = canvasRef.current;
