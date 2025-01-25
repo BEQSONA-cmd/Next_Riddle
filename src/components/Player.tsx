@@ -2,9 +2,7 @@ import { is_touch_thin } from "./Touch";
 import { map_structure, block_size, map_list, change_map, init_map_structure } from "./Map";
 import { get_no, get_so, get_we, get_ea, pixel_size } from "./Draw";
 import { IAngle, IPlayer } from "@/utils/types";
-const WIDTH = 800;
-const HEIGHT = 600;
-
+import { WIDTH, HEIGHT } from "./Settings";
 
 const player:IPlayer = {
     x: 7 * block_size + block_size / 2,

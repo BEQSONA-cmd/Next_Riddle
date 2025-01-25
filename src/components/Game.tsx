@@ -4,13 +4,7 @@ import { player, WIDTH, HEIGHT, update_position } from "./Player";
 import { draw_map, map, init_map_structure } from "./Map";
 import { draw_one_ray, pixel_size, MODE } from "./Draw";
 import { IAngle } from "@/utils/types";
-
-// pi / 2 = 90 degrees
-// pi = 180 degrees
-// pi * 3 / 2 = 270 degrees
-// pi * 2 = 360 degrees
-
-const FOV: number = Math.PI / 2;
+import { FOV } from "./Settings";
 
 const Game = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -41,10 +35,15 @@ const Game = () => {
             
             for (let i = 0; i < WIDTH; i += pixel_size) 
             {
+                const screen_offset = (i - WIDTH / 2) / (WIDTH / 2);
+            
+                const ray_angle_offset = Math.atan(screen_offset * Math.tan(FOV / 2));
+                ray_angle.angle = player.angle + ray_angle_offset;
+            
                 ray_angle.cos_angle = Math.cos(ray_angle.angle);
                 ray_angle.sin_angle = Math.sin(ray_angle.angle);
+            
                 draw_one_ray(ctx, player, ray_angle, i);
-                ray_angle.angle += fracrion;
             }
 
             requestAnimationFrame(gameLoop);
