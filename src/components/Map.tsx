@@ -93,6 +93,10 @@ function init_map_structure()
 {
     let x: number = 0;
     let y: number = 0;
+    map_structure.south = false;
+    map_structure.north = false;
+    map_structure.west = false;
+    map_structure.east = false;
 
     while(map[y])
     {
