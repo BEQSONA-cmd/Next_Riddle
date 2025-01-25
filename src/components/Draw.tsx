@@ -3,7 +3,7 @@ import { block_size, map_structure } from "./Map";
 import { IAngle, IRay } from "@/utils/types";
 import { is_touch_thin, touch_any, get_side, is_touch_side } from "./Touch"; 
 import { pixel_size, MAX_RECURSION, MODE } from "./Settings";
-import draw_one_line from "./Line";
+import draw_one_line  from "./Line";
 
 function get_no(ray_x: number, x: number)
 {

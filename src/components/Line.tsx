@@ -1,5 +1,4 @@
-import { WIDTH, HEIGHT } from "./Player";
-import { pixel_size } from "./Settings";
+import { pixel_size, HEIGHT, WIDTH } from "./Settings";
 import { IPlayer, IAngle, IRay } from "@/utils/types";
 import { block_size } from "./Map";
 import { get_side } from "./Touch";
