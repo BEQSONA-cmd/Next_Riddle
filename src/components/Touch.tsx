@@ -110,7 +110,7 @@ function is_touch_player(x: number, y: number)
 {
     const px = player.x;
     const py = player.y;
-    const psize = 20;
+    const psize = 10;
 
     if (x >= px && x <= px + psize && y >= py && y <= py + psize)
         return 1;

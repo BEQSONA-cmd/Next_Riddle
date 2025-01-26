@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import { handleKeyDown, handleKeyUp, keys } from "./Keys";
 import { player, update_position } from "./Player";
 import { draw_map, map, init_map_structure } from "./Map";
-import { draw_one_ray, pixel_size, MODE } from "./Draw";
+import { draw_one_ray, pixel_size } from "./Draw";
 import { IAngle } from "@/utils/types";
-import { FOV, WIDTH, HEIGHT } from "./Settings";
+import { FOV, WIDTH, HEIGHT, MODE } from "./Settings";
 
 const Game = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);

@@ -94,7 +94,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
     }
 }
 
-function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay, old_angle: IAngle)
+function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay, old_angle: IAngle, draw_player: boolean)
 {
     const height: number = ((block_size / distance) * (WIDTH / 2));
     let start_y = (HEIGHT - height) / 2;
@@ -116,6 +116,11 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
         ctx.fillStyle = `rgb(0, 0, ${intensity})`;
     else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
         ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
+    else if(draw_player)
+    {
+        ctx.fillStyle = `rgb(0, 0, ${intensity})`
+        start_y = (HEIGHT / 2) - ((HEIGHT / 2) - start_y) / 2;
+    }
 
     if(start_y < 0)
         start_y = 0;

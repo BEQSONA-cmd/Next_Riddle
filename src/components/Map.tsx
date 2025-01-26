@@ -75,7 +75,7 @@ const map4 = [
 
 const map_list = [map1, map2, map3, map4];
 
-let map = map_recursive;
+let map = map0;
 
 function change_map(new_map: any) 
 {

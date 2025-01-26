@@ -3,7 +3,7 @@ let FOV: number = Math.PI / 2;
 let pixel_size: number = 6;
 let MODE: number = 0;
 let MAX_RECURSION: number = 10;
-let darkness: boolean = false;
+let darkness: boolean = true;
 
 let WIDTH = 800;
 let HEIGHT = 600;

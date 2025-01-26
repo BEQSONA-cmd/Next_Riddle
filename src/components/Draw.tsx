@@ -37,6 +37,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
 {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
+    let draw_player: boolean = false;
 
     if(portalnum > MAX_RECURSION) return [0, { x: 0, y: 0 }];
 
@@ -59,7 +60,9 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
 
     let old_angle: IAngle = { cos_angle: angle.cos_angle, sin_angle: angle.sin_angle, angle: angle.angle };
 
-    if (is_touch_thin(ray_x, ray_y, 'S'))
+    if(is_touch_side(ray_x, ray_y, angle, portalnum) == 2)
+        return [distance, ray, true];
+    else if (is_touch_thin(ray_x, ray_y, 'S'))
     {
         let [no_ray_x, no_ray_y] = [0, 0];
 
@@ -90,9 +93,10 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_player.x = no_ray_x + angle.cos_angle;
         new_player.y = no_ray_y + angle.sin_angle;
 
-        let [dist, new_ray] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
         distance += dist;
         ray = new_ray;
+        draw_player = draw_p;
     }
     else if(is_touch_thin(ray_x, ray_y, 'N'))
     {
@@ -127,9 +131,10 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_angle.cos_angle = angle.cos_angle;
         new_angle.sin_angle = angle.sin_angle;
 
-        let [dist, new_ray] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
         distance += dist;
         ray = new_ray;
+        draw_player = draw_p;
     }
     else if(is_touch_thin(ray_x, ray_y, 'W'))
     {
@@ -163,9 +168,10 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_angle.cos_angle = angle.cos_angle;
         new_angle.sin_angle = angle.sin_angle;
 
-        let [dist, new_ray] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
         distance += dist;
         ray = new_ray;
+        draw_player = draw_p;
     }
     else if(is_touch_thin(ray_x, ray_y, 'E'))
     {
@@ -199,15 +205,16 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_angle.cos_angle = angle.cos_angle;
         new_angle.sin_angle = angle.sin_angle;
 
-        let [dist, new_ray] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
         distance += dist;
         ray = new_ray;
+        draw_player = draw_p;
     }
 
-    if(!MODE)
+    if(!MODE && portalnum == 0)
     {
         distance *= Math.cos(angle.angle - player.angle);
-        draw_one_line(ctx, player, angle, i, distance, ray, old_angle);
+        draw_one_line(ctx, player, angle, i, distance, ray, old_angle, draw_player);
     }
     return [distance, ray];
 }
