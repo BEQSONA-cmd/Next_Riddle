@@ -31,8 +31,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         {
             [player.x, player.y] = get_no(player.x, map_structure.sout_x);
             player.y -= pixel_size;
-            change_map(map_list[1]);
-            init_map_structure();
         }
         else if(map_structure.west)
         {
@@ -59,8 +57,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
             [player.x, player.y] = get_we(player.x, map_structure.north_x);
             player.x = player.x - pixel_size;
             player.angle = player.angle + Math.PI / 2;
-            change_map(map_list[2]);
-            init_map_structure();
         }
         else if(map_structure.east)
         {
@@ -76,8 +72,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         if(map_structure.east)
         {
             [player.x, player.y] = get_ea(player.y, map_structure.west_y);
-            change_map(map_list[3]);
-            init_map_structure();
         }
         else if(map_structure.north)
         {
@@ -112,8 +106,6 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         {
             [player.x, player.y] = get_so(player.y, map_structure.east_y);
             player.angle = player.angle - Math.PI / 2;
-            change_map(map_list[0]);
-            init_map_structure();
         }
     }
 }

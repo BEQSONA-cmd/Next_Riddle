@@ -40,7 +40,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
 
     if(portalnum > MAX_RECURSION) return [0, { x: 0, y: 0 }];
 
-    while (!is_touch_side(ray_x, ray_y, angle))
+    while (!is_touch_side(ray_x, ray_y, angle, portalnum))
     {
         if(MODE)
         {
@@ -204,7 +204,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         ray = new_ray;
     }
 
-    if(!MODE && portalnum == 0)
+    if(!MODE)
     {
         distance *= Math.cos(angle.angle - player.angle);
         draw_one_line(ctx, player, angle, i, distance, ray, old_angle);

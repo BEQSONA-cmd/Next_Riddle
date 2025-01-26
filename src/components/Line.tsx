@@ -1,4 +1,4 @@
-import { pixel_size, HEIGHT, WIDTH } from "./Settings";
+import { pixel_size, HEIGHT, WIDTH, darkness } from "./Settings";
 import { IPlayer, IAngle, IRay } from "@/utils/types";
 import { block_size } from "./Map";
 import { get_side } from "./Touch";
@@ -24,12 +24,21 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         let color: string = "";
         if ((tile_x + tile_y) % 2 === 0)
         {
-            const color_1 = Math.floor(255 - distance) / 2;
+
+            let color_1;
+            if(darkness)
+                color_1 = Math.floor(255 - distance) / 2;
+            else
+                color_1 = 255 / 2;
             color = `rgb(${color_1}, ${color_1}, ${color_1})`;
         }
         else
         {
-            const color_2 = Math.floor((255 - distance) / 4);
+            let color_2;
+            if(darkness)
+                color_2 = Math.floor(255 - distance) / 4;
+            else
+                color_2 = 255 / 4;
             color = `rgb(${color_2}, ${color_2}, ${color_2})`;
         }
 
@@ -61,12 +70,20 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         let color: string = "";
         if ((tile_x + tile_y) % 2 === 0)
         {
-            const color_1 = Math.floor(255 - distance);
+            let color_1;
+            if(darkness)
+                color_1 =  Math.floor(255 - distance);
+            else
+                color_1 = 255;
             color = `rgb(${color_1}, ${color_1}, ${color_1})`;
         }
         else
         {
-            const color_2 = Math.floor((255 - distance) / 2);
+            let color_2;
+            if(darkness)
+                color_2 = Math.floor(255 - distance) / 2;
+            else
+                color_2 = 255 / 2;
             color = `rgb(${color_2}, ${color_2}, ${color_2})`;
         }
 
@@ -84,7 +101,9 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
     let end_y = start_y + height;
     start_y -= pixel_size;
     end_y += pixel_size;
-    let intensity = 255 - distance;
+    let intensity = 255;
+    if(darkness)
+        intensity -= distance;
     if(intensity < 0)
         intensity = 0;
 

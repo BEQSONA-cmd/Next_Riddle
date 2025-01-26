@@ -1,5 +1,6 @@
 import { block_size, map } from './Map';
 import { IAngle } from "@/utils/types";
+import { player } from './Player';
 
 function is_touch_thin(px: number, py: number, c: any) 
 {
@@ -105,7 +106,19 @@ function get_side(ray_x: number, ray_y: number, angle: IAngle): number
     return 0;
 }
 
-function is_touch_side(x: number, y: number, angle: IAngle)
+function is_touch_player(x: number, y: number)
+{
+    const px = player.x;
+    const py = player.y;
+    const psize = 20;
+
+    if (x >= px && x <= px + psize && y >= py && y <= py + psize)
+        return 1;
+
+    return 0;
+}
+
+function is_touch_side(x: number, y: number, angle: IAngle, portalnum: number)
 {
     if (is_touch_thin(x, y, '1'))
         return 1;
@@ -117,8 +130,10 @@ function is_touch_side(x: number, y: number, angle: IAngle)
         return 1;
     else if (is_touch_thin(x, y, 'E') && get_side(x, y, angle) == 2)
         return 1;
+    else if (is_touch_player(x, y) && portalnum > 0)
+        return 2;
 
     return 0;
 }
 
-export { is_touch_thin, touch_any, get_side, is_touch_side };
+export { is_touch_thin, touch_any, get_side, is_touch_side, is_touch_player };
