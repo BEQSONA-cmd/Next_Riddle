@@ -1,6 +1,6 @@
 import { is_touch_thin } from "./Touch";
 import { map_structure, block_size, map_list, change_map, init_map_structure } from "./Map";
-import { get_no, get_so, get_we, get_ea, pixel_size } from "./Draw";
+import { get_no, get_so, get_we, get_ea } from "./Draw";
 import { IAngle, IPlayer } from "@/utils/types";
 
 const player:IPlayer = {
@@ -16,7 +16,7 @@ const player:IPlayer = {
     dy: 0,
 };
 
-function check_portal(player: IPlayer, dx: number, dy: number)
+function check_portal(player: IPlayer, dx: number, dy: number, settings: any)
 {
     let angle: IAngle = { cos_angle: 0, sin_angle: 0, angle: 0 };
     angle.cos_angle = Math.cos(player.angle);
@@ -30,13 +30,13 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         if(map_structure.north) 
         {
             [player.x, player.y] = get_no(player.x, map_structure.sout_x);
-            player.y -= pixel_size;
+            player.y -= settings.pixel_size;
         }
         else if(map_structure.west)
         {
             let diff_x = player.x - map_structure.sout_x;
             player.y = map_structure.west_y - diff_x + block_size;
-            player.x = map_structure.west_x - pixel_size;
+            player.x = map_structure.west_x - settings.pixel_size;
             player.angle = player.angle - Math.PI / 2;
         }
         else if(map_structure.east)
@@ -55,7 +55,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         else if(map_structure.west)
         {
             [player.x, player.y] = get_we(player.x, map_structure.north_x);
-            player.x = player.x - pixel_size;
+            player.x = player.x - settings.pixel_size;
             player.angle = player.angle + Math.PI / 2;
         }
         else if(map_structure.east)
@@ -76,7 +76,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         else if(map_structure.north)
         {
             [player.x, player.y] = get_no(player.y, map_structure.west_y);
-            player.y = player.y - pixel_size;
+            player.y = player.y - settings.pixel_size;
             player.angle = player.angle - Math.PI / 2;
         }
         else if(map_structure.south)
@@ -93,13 +93,13 @@ function check_portal(player: IPlayer, dx: number, dy: number)
         if(map_structure.west)
         {
             [player.x, player.y] = get_we(player.y, map_structure.east_y);
-            player.x = player.x - pixel_size;
+            player.x = player.x - settings.pixel_size;
         }
         else if(map_structure.north)
         {
             let diff_x = player.y - map_structure.east_y;
             player.x = map_structure.north_x - diff_x + block_size;
-            player.y = map_structure.north_y - pixel_size;
+            player.y = map_structure.north_y - settings.pixel_size;
             player.angle = player.angle + Math.PI / 2;
         }
         else if(map_structure.south)
@@ -111,7 +111,7 @@ function check_portal(player: IPlayer, dx: number, dy: number)
 }
 
 
-function update_position(player: any, keys: any, map: any) 
+function update_position(player: any, keys: any, map: any, settings: any)
 {
     const angle_speed: number = 0.1;
 
@@ -155,7 +155,7 @@ function update_position(player: any, keys: any, map: any)
     if(is_touch_thin(player.x, player.y, '1'))
         player.y -= dy;
 
-    check_portal(player, dx, dy);
+    check_portal(player, dx, dy, settings);
 
 }
 

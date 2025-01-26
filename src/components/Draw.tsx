@@ -2,8 +2,9 @@ import { fixed_dist } from "./Utils";
 import { block_size, map_structure } from "./Map";
 import { IAngle, IRay } from "@/utils/types";
 import { is_touch_thin, touch_any, get_side, is_touch_side } from "./Touch"; 
-import { pixel_size, MAX_RECURSION, MODE } from "./Settings";
 import draw_one_line  from "./Line";
+
+const MAX_RECURSION = 10;
 
 function get_no(ray_x: number, x: number)
 {
@@ -33,7 +34,7 @@ function get_ea(ray_x: number, x : number)
     return [map_structure.east_x, ea_y];
 }
 
-function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum: number = 0): any
+function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, settings: any, portalnum: number = 0): any
 {
     let ray_x: number = player.x;
     let ray_y: number = player.y;
@@ -43,10 +44,10 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
 
     while (!is_touch_side(ray_x, ray_y, angle, portalnum))
     {
-        if(MODE)
+        if(settings.MODE)
         {
             ctx.fillStyle = "red";
-            ctx.fillRect(ray_x, ray_y, pixel_size, pixel_size);
+            ctx.fillRect(ray_x, ray_y, settings.pixel_size, settings.pixel_size);
         }
 
         ray_x += angle.cos_angle;
@@ -93,7 +94,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_player.x = no_ray_x + angle.cos_angle;
         new_player.y = no_ray_y + angle.sin_angle;
 
-        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, settings, portalnum + 1);
         distance += dist;
         ray = new_ray;
         draw_player = draw_p;
@@ -131,7 +132,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_angle.cos_angle = angle.cos_angle;
         new_angle.sin_angle = angle.sin_angle;
 
-        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, settings, portalnum + 1);
         distance += dist;
         ray = new_ray;
         draw_player = draw_p;
@@ -168,7 +169,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_angle.cos_angle = angle.cos_angle;
         new_angle.sin_angle = angle.sin_angle;
 
-        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, settings, portalnum + 1);
         distance += dist;
         ray = new_ray;
         draw_player = draw_p;
@@ -205,18 +206,18 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, portalnum
         new_angle.cos_angle = angle.cos_angle;
         new_angle.sin_angle = angle.sin_angle;
 
-        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, portalnum + 1);
+        let [dist, new_ray, draw_p] = draw_one_ray(ctx, new_player, new_angle, i, settings, portalnum + 1);
         distance += dist;
         ray = new_ray;
         draw_player = draw_p;
     }
 
-    if(!MODE && portalnum == 0)
+    if(!settings.MODE && portalnum == 0)
     {
         distance *= Math.cos(angle.angle - player.angle);
-        draw_one_line(ctx, player, angle, i, distance, ray, old_angle, draw_player);
+        draw_one_line(ctx, player, angle, i, distance, ray, old_angle, draw_player, settings);
     }
-    return [distance, ray];
+    return [distance, ray, draw_player];
 }
 
-export { draw_one_ray, pixel_size, MODE, touch_any, is_touch_thin, get_side, get_no, get_so, get_we, get_ea };
+export { draw_one_ray, touch_any, is_touch_thin, get_side, get_no, get_so, get_we, get_ea };

@@ -2,8 +2,7 @@
     "FOV": 1.5708,
     "pixel_size": 6,
     "MODE": 0,
-    "MAX_RECURSION": 10,
+    "darkness": 0,
     "WIDTH": 800,
     "HEIGHT": 600
 }
-  

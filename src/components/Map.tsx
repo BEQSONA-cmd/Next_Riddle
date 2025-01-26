@@ -1,5 +1,3 @@
-import { player } from './Player';
-
 const map_recursive = [
     "11111111111111111",
     "10000000000000001",

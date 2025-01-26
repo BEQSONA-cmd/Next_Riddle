@@ -1,18 +1,17 @@
-import { pixel_size, HEIGHT, WIDTH, darkness } from "./Settings";
 import { IPlayer, IAngle, IRay } from "@/utils/types";
 import { block_size } from "./Map";
 import { get_side } from "./Touch";
 
-function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle)
+function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle, settings: any)
 {
     let y = end_y;
     let block = 0;
     if(!player.change)
         block = block_size;
 
-    while (y < height - pixel_size) 
+    while (y < height - settings.pixel_size) 
     {
-        let distance = ((block_size / 3) * HEIGHT) / (y - HEIGHT / 2);
+        let distance = ((block_size / 3) * settings.HEIGHT) / (y - settings.HEIGHT / 2);
         distance /= Math.cos(ray_angle.angle - player.angle);
 
         const floor_x = (player.x + block) + distance * ray_angle.cos_angle;
@@ -26,7 +25,7 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         {
 
             let color_1;
-            if(darkness)
+            if(settings.darkness)
                 color_1 = Math.floor(255 - distance) / 2;
             else
                 color_1 = 255 / 2;
@@ -35,7 +34,7 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         else
         {
             let color_2;
-            if(darkness)
+            if(settings.darkness)
                 color_2 = Math.floor(255 - distance) / 4;
             else
                 color_2 = 255 / 4;
@@ -43,13 +42,13 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         }
 
         ctx.fillStyle = color;
-        ctx.fillRect(i, y, pixel_size, pixel_size);
+        ctx.fillRect(i, y, settings.pixel_size, settings.pixel_size);
 
-        y += pixel_size / 2;
+        y += settings.pixel_size / 2;
     }
 }
 
-function draw_ceiling(ctx: any, i: number, start_y: number, height: number, player: IPlayer, ray_angle: IAngle)
+function draw_ceiling(ctx: any, i: number, start_y: number, height: number, player: IPlayer, ray_angle: IAngle, settings: any)
 {
     let y = start_y;
     let block = 0;
@@ -58,7 +57,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
     ray_angle.angle = ray_angle.angle + Math.PI;
     while (y > 0) 
     {
-        let distance = ((block_size / 3) * HEIGHT) / (y - HEIGHT / 2);
+        let distance = ((block_size / 3) * settings.HEIGHT) / (y - settings.HEIGHT / 2);
         distance /= Math.cos(ray_angle.angle - player.angle);
 
         const floor_x = (player.x + block) + distance * ray_angle.cos_angle;
@@ -71,7 +70,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         if ((tile_x + tile_y) % 2 === 0)
         {
             let color_1;
-            if(darkness)
+            if(settings.darkness)
                 color_1 =  Math.floor(255 - distance);
             else
                 color_1 = 255;
@@ -80,7 +79,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         else
         {
             let color_2;
-            if(darkness)
+            if(settings.darkness)
                 color_2 = Math.floor(255 - distance) / 2;
             else
                 color_2 = 255 / 2;
@@ -88,21 +87,21 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         }
 
         ctx.fillStyle = color;
-        ctx.fillRect(i, y, pixel_size, pixel_size);
+        ctx.fillRect(i, y, settings.pixel_size, settings.pixel_size);
 
-        y -= pixel_size / 2;
+        y -= settings.pixel_size / 2;
     }
 }
 
-function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay, old_angle: IAngle, draw_player: boolean)
+function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay, old_angle: IAngle, draw_player: boolean, settings: any)
 {
-    const height: number = ((block_size / distance) * (WIDTH / 2));
-    let start_y = (HEIGHT - height) / 2;
+    const height: number = ((block_size / distance) * (settings.WIDTH / 2));
+    let start_y = (settings.HEIGHT - height) / 2;
     let end_y = start_y + height;
-    start_y -= pixel_size;
-    end_y += pixel_size;
+    start_y -= settings.pixel_size;
+    end_y += settings.pixel_size;
     let intensity = 255;
-    if(darkness)
+    if(settings.darkness)
         intensity -= distance;
     if(intensity < 0)
         intensity = 0;
@@ -119,17 +118,17 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
     else if(draw_player)
     {
         ctx.fillStyle = `rgb(0, 0, ${intensity})`
-        start_y = (HEIGHT / 2) - ((HEIGHT / 2) - start_y) / 2;
+        start_y = (settings.HEIGHT / 2) - ((settings.HEIGHT / 2) - start_y) / 2;
     }
 
     if(start_y < 0)
         start_y = 0;
-    if(end_y > HEIGHT)
-        end_y = HEIGHT;
+    if(end_y > settings.HEIGHT)
+        end_y = settings.HEIGHT;
 
-    ctx.fillRect(i, start_y, pixel_size, end_y - start_y);
-    draw_floor(ctx, i, end_y, HEIGHT, player, old_angle);
-    draw_ceiling(ctx, i, start_y, HEIGHT, player, old_angle);
+    ctx.fillRect(i, start_y, settings.pixel_size, end_y - start_y);
+    draw_floor(ctx, i, end_y, settings.HEIGHT, player, old_angle, settings);
+    draw_ceiling(ctx, i, start_y, settings.HEIGHT, player, old_angle, settings);
 }
 
 export default draw_one_line;
