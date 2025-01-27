@@ -107,8 +107,23 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
     const color_wall = `rgb(${intensity}, ${intensity}, ${intensity})`;
     const color_line = `rgb(${intensity / 2}, ${intensity / 2}, ${intensity / 2})`;
     ctx.fillStyle = color_wall;
-    if(edge_of_wall(ray.x, ray.y) || is_touch_thin(ray.x, ray.y, '2'))
+    if(edge_of_wall(ray.x, ray.y))
         ctx.fillStyle = color_line;
+
+    if(is_touch_thin(ray.x, ray.y, '2'))
+    {
+        if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
+            ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
+        else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
+            ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
+        else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
+            ctx.fillStyle = `rgb(0, 0, ${intensity})`;
+        else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
+            ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`
+        else
+            ctx.fillStyle = color_line;
+    }
+
     
     if(draw_player)
     {
