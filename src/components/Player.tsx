@@ -11,7 +11,7 @@ const player:IPlayer = {
     width: 5,
     height: 5,
     color: "yellow",
-    speed: 5,
+    speed: 2.5,
     dx: 0,
     dy: 0,
 };
@@ -31,6 +31,7 @@ function check_portal(player: IPlayer, dx: number, dy: number, settings: any)
         {
             [player.x, player.y] = get_no(player.x, map_structure.sout_x);
             player.y -= settings.pixel_size;
+            change_map(map_list[1]);
         }
         else if(map_structure.west)
         {
@@ -57,6 +58,7 @@ function check_portal(player: IPlayer, dx: number, dy: number, settings: any)
             [player.x, player.y] = get_we(player.x, map_structure.north_x);
             player.x = player.x - settings.pixel_size;
             player.angle = player.angle + Math.PI / 2;
+            change_map(map_list[2]);
         }
         else if(map_structure.east)
         {
@@ -72,6 +74,7 @@ function check_portal(player: IPlayer, dx: number, dy: number, settings: any)
         if(map_structure.east)
         {
             [player.x, player.y] = get_ea(player.y, map_structure.west_y);
+            change_map(map_list[3]);
         }
         else if(map_structure.north)
         {
@@ -106,6 +109,7 @@ function check_portal(player: IPlayer, dx: number, dy: number, settings: any)
         {
             [player.x, player.y] = get_so(player.y, map_structure.east_y);
             player.angle = player.angle - Math.PI / 2;
+            change_map(map_list[0]);
         }
     }
 }
@@ -113,7 +117,7 @@ function check_portal(player: IPlayer, dx: number, dy: number, settings: any)
 
 function update_position(player: any, keys: any, map: any, settings: any)
 {
-    const angle_speed: number = 0.1;
+    const angle_speed: number = 0.05;
 
     if (keys["ArrowLeft"])
         player.angle -= angle_speed;

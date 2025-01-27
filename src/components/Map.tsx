@@ -73,7 +73,7 @@ const map4 = [
 
 const map_list = [map1, map2, map3, map4];
 
-let map = map0;
+let map = map_list[0];
 
 function change_map(new_map: any) 
 {
