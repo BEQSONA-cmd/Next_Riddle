@@ -22,7 +22,7 @@ function is_touch_thin(px: number, py: number, c: any)
             let x_in_map = map_x * block_size;
             let y_in_map = map_y * block_size + (block_size - thickness);
     
-            if (px >= x_in_map - 20 && px <= x_in_map + block_size + 20 && py >= y_in_map && py <= y_in_map + thickness)
+            if (px >= x_in_map && px <= x_in_map + block_size && py >= y_in_map && py <= y_in_map + thickness)
                 return 1;
         }
         else if(c === 'N')
