@@ -153,10 +153,10 @@ function update_position(player: any, keys: any, map: any, settings: any)
     }
 
     player.x += dx;
-    if(is_touch_thin(player.x, player.y, '1'))
+    if(is_touch_thin(player.x, player.y, '1') || is_touch_thin(player.x, player.y, '2'))
         player.x -= dx;
     player.y += dy;
-    if(is_touch_thin(player.x, player.y, '1'))
+    if(is_touch_thin(player.x, player.y, '1') || is_touch_thin(player.x, player.y, '2'))
         player.y -= dy;
 
     check_portal(player, dx, dy, settings);

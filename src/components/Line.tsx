@@ -106,9 +106,9 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
 
     const color_wall = `rgb(${intensity}, ${intensity}, ${intensity})`;
     const color_line = `rgb(${intensity / 2}, ${intensity / 2}, ${intensity / 2})`;
-    ctx.fillStyle = color_wall;
-    if(edge_of_wall(ray.x, ray.y))
-        ctx.fillStyle = color_line;
+    ctx.fillStyle = color_line;
+    if(!edge_of_wall(ray.x, ray.y))
+        ctx.fillStyle = color_wall;
     
     if(draw_player)
     {

@@ -132,6 +132,8 @@ function is_touch_side(x: number, y: number, angle: IAngle, portalnum: number)
         return 1;
     else if (is_touch_player(x, y) && portalnum > 0)
         return 2;
+    else if (is_touch_thin(x, y, '2'))
+        return 3;
 
     return 0;
 }
