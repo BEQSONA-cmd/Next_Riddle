@@ -1,6 +1,6 @@
 import { IPlayer, IAngle, IRay } from "@/utils/types";
 import { block_size } from "./Map";
-import { get_side, edge_of_wall } from "./Touch";
+import { get_side, edge_of_wall, is_touch_thin } from "./Touch";
 
 function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle, settings: any)
 {
@@ -106,15 +106,16 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
 
     const color_wall = `rgb(${intensity}, ${intensity}, ${intensity})`;
     const color_line = `rgb(${intensity / 2}, ${intensity / 2}, ${intensity / 2})`;
-    ctx.fillStyle = color_line;
-    if(!edge_of_wall(ray.x, ray.y))
-        ctx.fillStyle = color_wall;
+    ctx.fillStyle = color_wall;
+    if(edge_of_wall(ray.x, ray.y) || is_touch_thin(ray.x, ray.y, '2'))
+        ctx.fillStyle = color_line;
     
     if(draw_player)
     {
         ctx.fillStyle = `rgb(0, 0, ${intensity})`
         start_y = (settings.HEIGHT / 2) - ((settings.HEIGHT / 2) - start_y) / 2;
     }
+    
 
     if(start_y < 0)
         start_y = 0;
@@ -127,8 +128,8 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
     draw_ceiling(ctx, i, start_y, settings.HEIGHT, player, old_angle, settings);
     
     ctx.fillStyle = color_line;
-    ctx.fillRect(i, start_y, settings.pixel_size, settings.pixel_size);
-    ctx.fillRect(i, end_y, settings.pixel_size, settings.pixel_size);
+    ctx.fillRect(i, start_y + 1, settings.pixel_size, settings.pixel_size);
+    ctx.fillRect(i, end_y - 1, settings.pixel_size, settings.pixel_size);
 
 }
 
