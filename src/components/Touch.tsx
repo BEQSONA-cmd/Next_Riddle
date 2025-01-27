@@ -136,4 +136,37 @@ function is_touch_side(x: number, y: number, angle: IAngle, portalnum: number)
     return 0;
 }
 
-export { is_touch_thin, touch_any, get_side, is_touch_side, is_touch_player };
+function edge_of_wall(x: number, y: number): boolean
+{
+    // block size is 50
+    // from centre of block the shortest edge is 25
+    // from centre of block the longest edge is 50
+
+    // if x and y are on the edge of the block
+    // then return true
+
+    const px: number = x / block_size;
+    const py: number = y / block_size;
+
+    let map_x = Math.floor(px);
+    let map_y = Math.floor(py);
+
+    if (map_y < 0 || map_y >= map.length || map_x < 0 || map_x >= map[0].length) {
+        return false;
+    }
+
+    if (map[map_y][map_x] === '1')
+    {
+        map_x = map_x * block_size;
+        map_y = map_y * block_size;
+
+        if (x >= map_x + 45 && x <= map_x + 49 && y >= map_y && y <= map_y + block_size)
+            return true;
+        if (x >= map_x && x <= map_x + block_size && y >= map_y + 45 && y <= map_y + 49)
+            return true;
+    }
+
+    return false;
+}
+
+export { is_touch_thin, touch_any, get_side, is_touch_side, is_touch_player, edge_of_wall };

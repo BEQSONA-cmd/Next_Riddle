@@ -1,6 +1,6 @@
 import { IPlayer, IAngle, IRay } from "@/utils/types";
 import { block_size } from "./Map";
-import { get_side } from "./Touch";
+import { get_side, edge_of_wall } from "./Touch";
 
 function draw_floor(ctx: any, i: number, end_y: number, height: number, player: IPlayer, ray_angle: IAngle, settings: any)
 {
@@ -96,26 +96,21 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
 function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, distance: number, ray: IRay, old_angle: IAngle, draw_player: boolean, settings: any)
 {
     const height: number = ((block_size / distance) * (settings.WIDTH / 2));
-    let start_y = (settings.HEIGHT - height) / 2;
-    let end_y = start_y + height;
-    start_y -= settings.pixel_size;
-    end_y += settings.pixel_size;
-    let intensity = 255;
+    let start_y: number = (settings.HEIGHT - height) / 2;
+    let end_y: number = start_y + height;
+    let intensity: number = 200;
     if(settings.darkness)
         intensity -= distance;
     if(intensity < 0)
         intensity = 0;
 
-    ctx.fillStyle = "black";
-    if(get_side(ray.x, ray.y, angle) == 1) // south side of the wall
-        ctx.fillStyle = `rgb(${intensity}, 0, 0)`;
-    else if(get_side(ray.x, ray.y, angle) == 2) // east side of the wall
-        ctx.fillStyle = `rgb(0, ${intensity}, 0)`;
-    else if(get_side(ray.x, ray.y, angle) == 3) // north side of the wall
-        ctx.fillStyle = `rgb(0, 0, ${intensity})`;
-    else if(get_side(ray.x, ray.y, angle) == 4) // west side of the wall
-        ctx.fillStyle = `rgb(${intensity}, 0, ${intensity})`;
-    else if(draw_player)
+    const color_wall = `rgb(${intensity}, ${intensity}, ${intensity})`;
+    const color_line = `rgb(${intensity / 2}, ${intensity / 2}, ${intensity / 2})`;
+    ctx.fillStyle = color_wall;
+    if(edge_of_wall(ray.x, ray.y))
+        ctx.fillStyle = color_line;
+    
+    if(draw_player)
     {
         ctx.fillStyle = `rgb(0, 0, ${intensity})`
         start_y = (settings.HEIGHT / 2) - ((settings.HEIGHT / 2) - start_y) / 2;
@@ -127,8 +122,14 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
         end_y = settings.HEIGHT;
 
     ctx.fillRect(i, start_y, settings.pixel_size, end_y - start_y);
+    
     draw_floor(ctx, i, end_y, settings.HEIGHT, player, old_angle, settings);
     draw_ceiling(ctx, i, start_y, settings.HEIGHT, player, old_angle, settings);
+    
+    ctx.fillStyle = color_line;
+    ctx.fillRect(i, start_y, settings.pixel_size, settings.pixel_size);
+    ctx.fillRect(i, end_y, settings.pixel_size, settings.pixel_size);
+
 }
 
 export default draw_one_line;
