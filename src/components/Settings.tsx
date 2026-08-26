@@ -35,21 +35,6 @@ const Map_Options = ({ settings, handleChange }: { settings: any; handleChange: 
                 />
                 <span className="text-lg mt-2">Current: {settings.pixel_size}px</span>
             </div>
-
-            {/* MODE */}
-            <div className="flex flex-col">
-                <label htmlFor="MODE" className="font-semibold mb-2">2D Mode</label>
-                <button
-                    onClick={() => handleChange("MODE", settings.MODE === 0 ? 1 : 0)}
-                    className={`px-8 py-4 text-white font-semibold rounded-lg shadow-md ${
-                        settings.MODE === 1 ? "bg-green-500 hover:bg-green-600 transform hover:scale-105 transition duration-300" :
-                         "bg-red-500 hover:bg-red-600 transform hover:scale-105 transition duration-300"
-                    }`}
-                >
-                    {settings.MODE === 1 ? "ON" : "OFF"}
-                </button>
-            </div>
-
             {/* Darkness */}
             <div className="flex flex-col">
                 <label htmlFor="darkness" className="font-semibold mb-2">Darkness</label>
@@ -74,7 +59,6 @@ const Settings = ({ onSettingsSave }: { onSettingsSave: (settings: any) => void 
         setSettings({
             FOV: 90,
             pixel_size: 6,
-            MODE: 0,
             darkness: 0,
             WIDTH: 800,
             HEIGHT: 600,
@@ -83,10 +67,6 @@ const Settings = ({ onSettingsSave }: { onSettingsSave: (settings: any) => void 
 
     const handleChange = (key: string, value: any) => {
         setSettings((prev: any) => ({ ...prev, [key]: value }));
-    };
-
-    const handleToggle = (key: string) => {
-        setSettings((prev: any) => ({ ...prev, [key]: prev[key] === 0 ? 1 : 0 }));
     };
 
     const handleSave = () => {

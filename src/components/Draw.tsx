@@ -44,15 +44,10 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, settings:
 
     while (!is_touch_side(ray_x, ray_y, angle, portalnum))
     {
-        if(settings.MODE)
-        {
-            ctx.fillStyle = "red";
-            ctx.fillRect(ray_x, ray_y, settings.pixel_size, settings.pixel_size);
-        }
-
         ray_x += angle.cos_angle;
         ray_y += angle.sin_angle;
     }
+
     let ray: IRay = { x: ray_x, y: ray_y };
     let distance = fixed_dist(player.x, player.y, ray_x, ray_y);
 
@@ -212,7 +207,7 @@ function draw_one_ray(ctx: any, player: any, angle: IAngle, i: number, settings:
         draw_player = draw_p;
     }
 
-    if(!settings.MODE && portalnum == 0)
+    if(portalnum == 0)
     {
         distance *= Math.cos(angle.angle - player.angle);
         draw_one_line(ctx, player, angle, i, distance, ray, old_angle, draw_player, settings);

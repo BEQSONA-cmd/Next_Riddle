@@ -44,7 +44,7 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         ctx.fillStyle = color;
         ctx.fillRect(i, y, settings.pixel_size, settings.pixel_size);
 
-        y += settings.pixel_size / 2;
+        y += settings.pixel_size * 0.8;
     }
 }
 
@@ -89,7 +89,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         ctx.fillStyle = color;
         ctx.fillRect(i, y, settings.pixel_size, settings.pixel_size);
 
-        y -= settings.pixel_size / 2;
+        y -= settings.pixel_size * 0.8;
     }
 }
 
@@ -103,6 +103,7 @@ function draw_one_line(ctx: any, player: IPlayer, angle: IAngle, i: number, dist
         intensity -= distance;
     if(intensity < 0)
         intensity = 0;
+    
 
     const color_wall = `rgb(${intensity}, ${intensity}, ${intensity})`;
     const color_line = `rgb(${intensity / 2}, ${intensity / 2}, ${intensity / 2})`;

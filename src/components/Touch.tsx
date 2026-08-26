@@ -140,13 +140,6 @@ function is_touch_side(x: number, y: number, angle: IAngle, portalnum: number)
 
 function edge_of_wall(x: number, y: number): boolean
 {
-    // block size is 50
-    // from centre of block the shortest edge is 25
-    // from centre of block the longest edge is 50
-
-    // if x and y are on the edge of the block
-    // then return true
-
     const px: number = x / block_size;
     const py: number = y / block_size;
 
