@@ -26,7 +26,7 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
 
             let color_1;
             if(settings.darkness)
-                color_1 = Math.floor(255 - distance) / 2;
+                color_1 = Math.floor(200 - distance) / 2;
             else
                 color_1 = 255 / 2;
             color = `rgb(${color_1}, ${color_1}, ${color_1})`;
@@ -35,7 +35,7 @@ function draw_floor(ctx: any, i: number, end_y: number, height: number, player: 
         {
             let color_2;
             if(settings.darkness)
-                color_2 = Math.floor(255 - distance) / 4;
+                color_2 = Math.floor(200 - distance) / 4;
             else
                 color_2 = 255 / 4;
             color = `rgb(${color_2}, ${color_2}, ${color_2})`;
@@ -71,7 +71,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         {
             let color_1;
             if(settings.darkness)
-                color_1 =  Math.floor(255 - distance);
+                color_1 =  Math.floor(200 - distance);
             else
                 color_1 = 255;
             color = `rgb(${color_1}, ${color_1}, ${color_1})`;
@@ -80,7 +80,7 @@ function draw_ceiling(ctx: any, i: number, start_y: number, height: number, play
         {
             let color_2;
             if(settings.darkness)
-                color_2 = Math.floor(255 - distance) / 2;
+                color_2 = Math.floor(200 - distance) / 2;
             else
                 color_2 = 255 / 2;
             color = `rgb(${color_2}, ${color_2}, ${color_2})`;

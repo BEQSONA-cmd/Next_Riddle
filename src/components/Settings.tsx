@@ -58,7 +58,7 @@ const Settings = ({ onSettingsSave }: { onSettingsSave: (settings: any) => void 
     useEffect(() => {
         setSettings({
             FOV: 90,
-            pixel_size: 6,
+            pixel_size: 4,
             darkness: 0,
             WIDTH: 800,
             HEIGHT: 600,
